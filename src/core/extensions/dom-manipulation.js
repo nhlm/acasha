@@ -5,6 +5,12 @@ export default class DOMAlter extends Extension {
     return 'acasha/dom-manipulation';
   }
 
+  get dependencies() {
+    return [
+      'acasha/dom-objects',
+    ];
+  }
+
   get autoDiscover() {
     return false;
   }

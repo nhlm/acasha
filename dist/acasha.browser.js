@@ -893,6 +893,11 @@ $__System.register('2d', ['29', '2a', 'b', 'c', 'a'], function (_export) {
             return 'acasha/dom-selection';
           }
         }, {
+          key: 'dependencies',
+          get: function get() {
+            return ['acasha/dom-objects'];
+          }
+        }, {
           key: 'autoDiscover',
           get: function get() {
             return false;
@@ -955,6 +960,11 @@ $__System.register('2e', ['29', '2a', 'b', 'c', 'a'], function (_export) {
           key: 'name',
           get: function get() {
             return 'acasha/dom-manipulation';
+          }
+        }, {
+          key: 'dependencies',
+          get: function get() {
+            return ['acasha/dom-objects'];
           }
         }, {
           key: 'autoDiscover',

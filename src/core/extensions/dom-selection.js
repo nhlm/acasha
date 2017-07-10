@@ -5,6 +5,12 @@ export default class DOMSelect extends Extension {
     return 'acasha/dom-selection';
   }
 
+  get dependencies() {
+    return [
+      'acasha/dom-objects',
+    ];
+  }
+
   get autoDiscover() {
     return false;
   }
