@@ -1,17 +1,31 @@
-function ensureNodeList(resource) {
-  if ( ! ( resource instanceof NodeList ) ) {
-    throw 'Acasha Error: Acasha can only operate on NodeList objects here.';
-  }
-
-  return resource;
+function isObject(instance) {
+  return ( instance && typeof instance === 'object' && ! Array.isArray(instance) );
 }
 
-function ensureElement(resource) {
-  if ( ! ( resource instanceof HTMLElement ) ) {
-    throw 'Acasha Error: Acasha can only operate on HTMLElement objects here.';
+
+function extend(target, ...sources) {
+  if ( ! sources.length ) {
+    return target;
   }
 
-  return resource;
+  var source = sources.shift();
+
+  if ( isObject(target) && isObject(source) ) {
+    for ( var key in source ) {
+      if ( isObject(source[key]) ) {
+        if ( ! ( target[key] ) ) {
+          Object.assign(target, { [key]: {} });
+        }
+
+        extend(target[key], source[key]);
+      }
+      else {
+        Object.assing(target, { [key]: source[key] });
+      }
+    }
+  }
+
+  return extend(target, ...sources);
 }
 
-export { ensureNodeList, ensureElement };
+export { isObject, extend };

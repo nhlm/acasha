@@ -1,23 +1,17 @@
-import { Scope, AcashaScope, AcashaElementScope } from './core/scope';
-import { AcashaExtensionRepository } from './core/extension';
-import DOMExtension from './core/extensions/dom';
+import { ExtensionRepository } from './modularity/extension-repository';
+import { CoreExtensions } from './core/extensions';
 
-var extensions = new AcashaExtensionRepository();
+var extensions = new ExtensionRepository();
 
-extensions.attach(DOMExtension.create());
+CoreExtensions.forEach(function(extension) {
+  extensions.attach(new extension);
+});
 
-function query(selector, context) {
-  if ( ! ( extensions.isBooted ) ) {
-    extensions.boot();
-  }
+// objects elevation
+var global = window || {};
 
-  return Scope(selector, context);
-}
+extensions.publish().extend(global);
 
-query.extensions = extensions;
-query.classes = {
-  node: AcashaElementScope,
-  nodeList: AcashaScope,
-};
+console.log(extensions);
 
-window.$ = query;
+export { global };
