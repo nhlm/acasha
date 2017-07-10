@@ -1,10 +1,16 @@
-import DocumentObjectModelObjects from './extensions/dom-objects';
-import DocumentObjectModel from './extensions/dom';
+import DOMObjects from './extensions/dom-objects';
+import DOM from './extensions/dom';
+import DOMIterate from './extensions/dom-iteration';
+import DOMSelect from './extensions/dom-selection';
+import DOMAlter from './extensions/dom-manipulation';
 import Acasha from './extensions/acasha';
 
 var CoreExtensions = [
-  DocumentObjectModelObjects,
-  DocumentObjectModel,
+  DOMObjects,
+  DOM,
+  DOMIterate,
+  DOMSelect,
+  DOMAlter,
   Acasha,
 ];
 

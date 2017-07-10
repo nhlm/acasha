@@ -69,16 +69,23 @@ class ExtensionRepository {
           throw 'Acasha Extension Error: Factory "' + extension + '@' + factory + '" must be a function';
         }
 
-        this[objects][factory] = this[extensions][extension].factories[factory].call(
+        var result = this[extensions][extension].factories[factory].call(
           this[extensions][extension],
           this[objects][factory] || undefined,
           this[objects],
           this
         );
+
+        if ( typeof result !== 'undefined' ) {
+          this[objects][factory] = result;
+        }
       }
 
       this[extensions][extension].loaded = true;
 
+      return true;
+    }
+    else if ( this[extensions][extension].loaded === true ) {
       return true;
     }
 

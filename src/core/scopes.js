@@ -1,5 +1,13 @@
-class AcashaScope {
+var elementSymbol = Symbol('element');
 
+class AcashaElementScope {
+  constructor(node) {
+    this[elementSymbol] = node;
+  }
+
+  get element() {
+    return this[elementSymbol];
+  }
 }
 
 var nodeListSymbol = Symbol('node-list');
@@ -12,6 +20,22 @@ class AcashaListScope {
     this[selectorSymbol] = selector;
     this[contextSymbol] = context;
   }
+
+  get list() {
+    return this[nodeListSymbol];
+  }
+
+  get selector() {
+    return this[selectorSymbol];
+  }
+
+  get context() {
+    return this[contextSymbol];
+  }
+
+  get length() {
+    return this.list.length;
+  }
 }
 
-export { AcashaScope, AcashaListScope };
+export { AcashaElementScope, AcashaListScope };

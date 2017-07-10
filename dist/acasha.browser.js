@@ -124,11 +124,17 @@ $__System.register('9', ['8', 'b', 'c', 'd', 'a'], function (_export) {
                   throw 'Acasha Extension Error: Factory "' + extension + '@' + factory + '" must be a function';
                 }
 
-                this[objects][factory] = this[extensions][extension].factories[factory].call(this[extensions][extension], this[objects][factory] || undefined, this[objects], this);
+                var result = this[extensions][extension].factories[factory].call(this[extensions][extension], this[objects][factory] || undefined, this[objects], this);
+
+                if (typeof result !== 'undefined') {
+                  this[objects][factory] = result;
+                }
               }
 
               this[extensions][extension].loaded = true;
 
+              return true;
+            } else if (this[extensions][extension].loaded === true) {
               return true;
             }
 
@@ -547,11 +553,13 @@ $__System.registerDynamic("d", ["26"], true, function ($__require, exports, modu
   /* */
   module.exports = { "default": $__require("26"), __esModule: true };
 });
-$__System.register('27', ['c', 'd'], function (_export) {
-  var _classCallCheck, _Symbol, AcashaScope, nodeListSymbol, selectorSymbol, contextSymbol, AcashaListScope;
+$__System.register('27', ['b', 'c', 'd'], function (_export) {
+  var _createClass, _classCallCheck, _Symbol, elementSymbol, AcashaElementScope, nodeListSymbol, selectorSymbol, contextSymbol, AcashaListScope;
 
   return {
-    setters: [function (_c) {
+    setters: [function (_b) {
+      _createClass = _b['default'];
+    }, function (_c) {
       _classCallCheck = _c['default'];
     }, function (_d) {
       _Symbol = _d['default'];
@@ -559,34 +567,76 @@ $__System.register('27', ['c', 'd'], function (_export) {
     execute: function () {
       'use strict';
 
-      AcashaScope = function AcashaScope() {
-        _classCallCheck(this, AcashaScope);
-      };
+      elementSymbol = _Symbol('element');
+
+      AcashaElementScope = (function () {
+        function AcashaElementScope(node) {
+          _classCallCheck(this, AcashaElementScope);
+
+          this[elementSymbol] = node;
+        }
+
+        _createClass(AcashaElementScope, [{
+          key: 'element',
+          get: function get() {
+            return this[elementSymbol];
+          }
+        }]);
+
+        return AcashaElementScope;
+      })();
 
       nodeListSymbol = _Symbol('node-list');
       selectorSymbol = _Symbol('selector');
       contextSymbol = _Symbol('context');
 
-      AcashaListScope = function AcashaListScope(nodeList, selector, context) {
-        _classCallCheck(this, AcashaListScope);
+      AcashaListScope = (function () {
+        function AcashaListScope(nodeList, selector, context) {
+          _classCallCheck(this, AcashaListScope);
 
-        this[nodeListSymbol] = nodeList;
-        this[selectorSymbol] = selector;
-        this[contextSymbol] = context;
-      };
+          this[nodeListSymbol] = nodeList;
+          this[selectorSymbol] = selector;
+          this[contextSymbol] = context;
+        }
 
-      _export('AcashaScope', AcashaScope);
+        _createClass(AcashaListScope, [{
+          key: 'list',
+          get: function get() {
+            return this[nodeListSymbol];
+          }
+        }, {
+          key: 'selector',
+          get: function get() {
+            return this[selectorSymbol];
+          }
+        }, {
+          key: 'context',
+          get: function get() {
+            return this[contextSymbol];
+          }
+        }, {
+          key: 'length',
+          get: function get() {
+            return this.list.length;
+          }
+        }]);
+
+        return AcashaListScope;
+      })();
+
+      _export('AcashaElementScope', AcashaElementScope);
 
       _export('AcashaListScope', AcashaListScope);
     }
   };
 });
 $__System.register('28', ['27', '29', '2a', 'b', 'c', 'a'], function (_export) {
-  var AcashaListScope, _get, _inherits, _createClass, _classCallCheck, Extension, DocumentObjectModelObjects;
+  var AcashaListScope, AcashaElementScope, _get, _inherits, _createClass, _classCallCheck, Extension, DOMObjects;
 
   return {
     setters: [function (_2) {
       AcashaListScope = _2.AcashaListScope;
+      AcashaElementScope = _2.AcashaElementScope;
     }, function (_) {
       _get = _['default'];
     }, function (_a) {
@@ -601,16 +651,16 @@ $__System.register('28', ['27', '29', '2a', 'b', 'c', 'a'], function (_export) {
     execute: function () {
       'use strict';
 
-      DocumentObjectModelObjects = (function (_Extension) {
-        _inherits(DocumentObjectModelObjects, _Extension);
+      DOMObjects = (function (_Extension) {
+        _inherits(DOMObjects, _Extension);
 
-        function DocumentObjectModelObjects() {
-          _classCallCheck(this, DocumentObjectModelObjects);
+        function DOMObjects() {
+          _classCallCheck(this, DOMObjects);
 
-          _get(Object.getPrototypeOf(DocumentObjectModelObjects.prototype), 'constructor', this).apply(this, arguments);
+          _get(Object.getPrototypeOf(DOMObjects.prototype), 'constructor', this).apply(this, arguments);
         }
 
-        _createClass(DocumentObjectModelObjects, [{
+        _createClass(DOMObjects, [{
           key: 'name',
           get: function get() {
             return 'acasha/dom-objects';
@@ -619,7 +669,7 @@ $__System.register('28', ['27', '29', '2a', 'b', 'c', 'a'], function (_export) {
           key: 'factories',
           get: function get() {
             return {
-              listScope: function listScope() {
+              listScopeFactory: function listScopeFactory() {
                 return function (selector, context) {
                   if (typeof context === 'undefined') {
                     context = document;
@@ -631,6 +681,21 @@ $__System.register('28', ['27', '29', '2a', 'b', 'c', 'a'], function (_export) {
 
                   return new AcashaListScope(document.querySelectorAll(selector, context), selector, context);
                 };
+              },
+              listScope: function listScope() {
+                return AcashaListScope;
+              },
+              elementScopeFactory: function elementScopeFactory() {
+                return function (element) {
+                  if (!(element instanceof HTMLElement)) {
+                    throw 'Acasha Scope Error: Only HTMLElements are suitable for scope creation';
+                  }
+
+                  return new AcashaElementScope(element);
+                };
+              },
+              elementScope: function elementScope() {
+                return AcashaElementScope;
               }
             };
           }
@@ -641,15 +706,15 @@ $__System.register('28', ['27', '29', '2a', 'b', 'c', 'a'], function (_export) {
           }
         }]);
 
-        return DocumentObjectModelObjects;
+        return DOMObjects;
       })(Extension);
 
-      _export('default', DocumentObjectModelObjects);
+      _export('default', DOMObjects);
     }
   };
 });
 $__System.register('2b', ['29', '2a', 'b', 'c', 'a'], function (_export) {
-  var _get, _inherits, _createClass, _classCallCheck, Extension, DocumentObjectModel;
+  var _get, _inherits, _createClass, _classCallCheck, Extension, DOM;
 
   return {
     setters: [function (_) {
@@ -666,16 +731,16 @@ $__System.register('2b', ['29', '2a', 'b', 'c', 'a'], function (_export) {
     execute: function () {
       'use strict';
 
-      DocumentObjectModel = (function (_Extension) {
-        _inherits(DocumentObjectModel, _Extension);
+      DOM = (function (_Extension) {
+        _inherits(DOM, _Extension);
 
-        function DocumentObjectModel() {
-          _classCallCheck(this, DocumentObjectModel);
+        function DOM() {
+          _classCallCheck(this, DOM);
 
-          _get(Object.getPrototypeOf(DocumentObjectModel.prototype), 'constructor', this).apply(this, arguments);
+          _get(Object.getPrototypeOf(DOM.prototype), 'constructor', this).apply(this, arguments);
         }
 
-        _createClass(DocumentObjectModel, [{
+        _createClass(DOM, [{
           key: 'name',
           get: function get() {
             return 'acasha/dom';
@@ -683,7 +748,7 @@ $__System.register('2b', ['29', '2a', 'b', 'c', 'a'], function (_export) {
         }, {
           key: 'dependencies',
           get: function get() {
-            return ['acasha/dom-objects'];
+            return ['acasha/dom-iteration', 'acasha/dom-selection', 'acasha/dom-manipulation'];
           }
         }, {
           key: 'factories',
@@ -691,7 +756,7 @@ $__System.register('2b', ['29', '2a', 'b', 'c', 'a'], function (_export) {
             return {
               $: function $(_$, factories) {
                 return function (selector, context) {
-                  return factories.listScope(selector, context);
+                  return factories.listScopeFactory(selector, context);
                 };
               }
             };
@@ -703,10 +768,214 @@ $__System.register('2b', ['29', '2a', 'b', 'c', 'a'], function (_export) {
           }
         }]);
 
-        return DocumentObjectModel;
+        return DOM;
       })(Extension);
 
-      _export('default', DocumentObjectModel);
+      _export('default', DOM);
+    }
+  };
+});
+$__System.register('2c', ['29', '2a', 'b', 'c', 'a'], function (_export) {
+  var _get, _inherits, _createClass, _classCallCheck, Extension, DOMIterate;
+
+  return {
+    setters: [function (_) {
+      _get = _['default'];
+    }, function (_a) {
+      _inherits = _a['default'];
+    }, function (_b) {
+      _createClass = _b['default'];
+    }, function (_c) {
+      _classCallCheck = _c['default'];
+    }, function (_a2) {
+      Extension = _a2.Extension;
+    }],
+    execute: function () {
+      'use strict';
+
+      DOMIterate = (function (_Extension) {
+        _inherits(DOMIterate, _Extension);
+
+        function DOMIterate() {
+          _classCallCheck(this, DOMIterate);
+
+          _get(Object.getPrototypeOf(DOMIterate.prototype), 'constructor', this).apply(this, arguments);
+        }
+
+        _createClass(DOMIterate, [{
+          key: 'applyListScopeExtensions',
+          value: function applyListScopeExtensions(listScope, factories) {
+            // .each()
+            listScope.prototype.each = function (callback) {
+              this.list.forEach(function (item) {
+                callback.call(factories.elementScopeFactory(item));
+
+                return this;
+              });
+            };
+          }
+        }, {
+          key: 'name',
+          get: function get() {
+            return 'acasha/dom-iteration';
+          }
+        }, {
+          key: 'dependencies',
+          get: function get() {
+            return ['acasha/dom-objects'];
+          }
+        }, {
+          key: 'factories',
+          get: function get() {
+            return {
+              listScope: function listScope(_listScope, factories) {
+                this.applyListScopeExtensions(_listScope, factories);
+              }
+            };
+          }
+        }, {
+          key: 'autoDiscover',
+          get: function get() {
+            return false;
+          }
+        }]);
+
+        return DOMIterate;
+      })(Extension);
+
+      _export('default', DOMIterate);
+    }
+  };
+});
+$__System.register('2d', ['29', '2a', 'b', 'c', 'a'], function (_export) {
+  var _get, _inherits, _createClass, _classCallCheck, Extension, DOMSelect;
+
+  return {
+    setters: [function (_) {
+      _get = _['default'];
+    }, function (_a) {
+      _inherits = _a['default'];
+    }, function (_b) {
+      _createClass = _b['default'];
+    }, function (_c) {
+      _classCallCheck = _c['default'];
+    }, function (_a2) {
+      Extension = _a2.Extension;
+    }],
+    execute: function () {
+      'use strict';
+
+      DOMSelect = (function (_Extension) {
+        _inherits(DOMSelect, _Extension);
+
+        function DOMSelect() {
+          _classCallCheck(this, DOMSelect);
+
+          _get(Object.getPrototypeOf(DOMSelect.prototype), 'constructor', this).apply(this, arguments);
+        }
+
+        _createClass(DOMSelect, [{
+          key: 'applyListScopeExtensions',
+          value: function applyListScopeExtensions(listScope, factories) {
+            listScope.prototype.first = function (selector) {};
+
+            listScope.prototype.last = function (selector) {};
+
+            listScope.prototype.next = function (selector) {};
+
+            listScope.prototype.prev = function (selector) {};
+
+            listScope.prototype.find = function (selector) {};
+          }
+        }, {
+          key: 'name',
+          get: function get() {
+            return 'acasha/dom-selection';
+          }
+        }, {
+          key: 'autoDiscover',
+          get: function get() {
+            return false;
+          }
+        }, {
+          key: 'factories',
+          get: function get() {
+            return {
+              listScope: function listScope(_listScope, factories) {
+                this.applyListScopeExtensions(_listScope, factories);
+              }
+            };
+          }
+        }]);
+
+        return DOMSelect;
+      })(Extension);
+
+      _export('default', DOMSelect);
+    }
+  };
+});
+$__System.register('2e', ['29', '2a', 'b', 'c', 'a'], function (_export) {
+  var _get, _inherits, _createClass, _classCallCheck, Extension, DOMAlter;
+
+  return {
+    setters: [function (_) {
+      _get = _['default'];
+    }, function (_a) {
+      _inherits = _a['default'];
+    }, function (_b) {
+      _createClass = _b['default'];
+    }, function (_c) {
+      _classCallCheck = _c['default'];
+    }, function (_a2) {
+      Extension = _a2.Extension;
+    }],
+    execute: function () {
+      'use strict';
+
+      DOMAlter = (function (_Extension) {
+        _inherits(DOMAlter, _Extension);
+
+        function DOMAlter() {
+          _classCallCheck(this, DOMAlter);
+
+          _get(Object.getPrototypeOf(DOMAlter.prototype), 'constructor', this).apply(this, arguments);
+        }
+
+        _createClass(DOMAlter, [{
+          key: 'applyListScopeExtensions',
+          value: function applyListScopeExtensions(listScope, factories) {
+            listScope.prototype.remove = function (selector) {};
+
+            listScope.prototype.hide = function (selector) {};
+
+            listScope.prototype.show = function (selector) {};
+          }
+        }, {
+          key: 'name',
+          get: function get() {
+            return 'acasha/dom-manipulation';
+          }
+        }, {
+          key: 'autoDiscover',
+          get: function get() {
+            return false;
+          }
+        }, {
+          key: 'factories',
+          get: function get() {
+            return {
+              listScope: function listScope(_listScope, factories) {
+                this.applyListScopeExtensions(_listScope, factories);
+              }
+            };
+          }
+        }]);
+
+        return DOMAlter;
+      })(Extension);
+
+      _export('default', DOMAlter);
     }
   };
 });
@@ -720,7 +989,7 @@ $__System.registerDynamic("1f", [], true, function ($__require, exports, module)
     return toString.call(it).slice(8, -1);
   };
 });
-$__System.registerDynamic('2c', ['1f'], true, function ($__require, exports, module) {
+$__System.registerDynamic('2f', ['1f'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
@@ -738,11 +1007,11 @@ $__System.registerDynamic("3", [], true, function ($__require, exports, module) 
     return it;
   };
 });
-$__System.registerDynamic('1b', ['2c', '3'], true, function ($__require, exports, module) {
+$__System.registerDynamic('1b', ['2f', '3'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
-  var IObject = $__require('2c'),
+  var IObject = $__require('2f'),
       defined = $__require('3');
   module.exports = function (it) {
     return IObject(defined(it));
@@ -776,7 +1045,7 @@ $__System.registerDynamic('5', ['22', '7', 'f'], true, function ($__require, exp
         }), 'Object', exp);
     };
 });
-$__System.registerDynamic('2d', ['1b', '5'], true, function ($__require, exports, module) {
+$__System.registerDynamic('30', ['1b', '5'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
@@ -787,29 +1056,29 @@ $__System.registerDynamic('2d', ['1b', '5'], true, function ($__require, exports
     };
   });
 });
-$__System.registerDynamic('2e', ['11', '2d'], true, function ($__require, exports, module) {
+$__System.registerDynamic('31', ['11', '30'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
   var $ = $__require('11');
-  $__require('2d');
+  $__require('30');
   module.exports = function getOwnPropertyDescriptor(it, key) {
     return $.getDesc(it, key);
   };
 });
-$__System.registerDynamic("2f", ["2e"], true, function ($__require, exports, module) {
+$__System.registerDynamic("32", ["31"], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
-  module.exports = { "default": $__require("2e"), __esModule: true };
+  module.exports = { "default": $__require("31"), __esModule: true };
 });
-$__System.registerDynamic("29", ["2f"], true, function ($__require, exports, module) {
+$__System.registerDynamic("29", ["32"], true, function ($__require, exports, module) {
   /* */
   "use strict";
 
   var global = this || self,
       GLOBAL = global;
-  var _Object$getOwnPropertyDescriptor = $__require("2f")["default"];
+  var _Object$getOwnPropertyDescriptor = $__require("32")["default"];
   exports["default"] = function get(_x, _x2, _x3) {
     var _again = true;
     _function: while (_again) {
@@ -844,7 +1113,7 @@ $__System.registerDynamic("29", ["2f"], true, function ($__require, exports, mod
   };
   exports.__esModule = true;
 });
-$__System.registerDynamic('30', ['11'], true, function ($__require, exports, module) {
+$__System.registerDynamic('33', ['11'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
@@ -853,11 +1122,11 @@ $__System.registerDynamic('30', ['11'], true, function ($__require, exports, mod
     return $.create(P, D);
   };
 });
-$__System.registerDynamic("31", ["30"], true, function ($__require, exports, module) {
+$__System.registerDynamic("34", ["33"], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
-  module.exports = { "default": $__require("30"), __esModule: true };
+  module.exports = { "default": $__require("33"), __esModule: true };
 });
 $__System.registerDynamic('18', [], true, function ($__require, exports, module) {
   var global = this || self,
@@ -866,13 +1135,13 @@ $__System.registerDynamic('18', [], true, function ($__require, exports, module)
   var global = module.exports = typeof window != 'undefined' && window.Math == Math ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
   if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
 });
-$__System.registerDynamic('22', ['18', '7', '32'], true, function ($__require, exports, module) {
+$__System.registerDynamic('22', ['18', '7', '35'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
   var global = $__require('18'),
       core = $__require('7'),
-      ctx = $__require('32'),
+      ctx = $__require('35'),
       PROTOTYPE = 'prototype';
   var $export = function (type, name, source) {
     var IS_FORCED = type & $export.F,
@@ -909,7 +1178,7 @@ $__System.registerDynamic('22', ['18', '7', '32'], true, function ($__require, e
   $export.W = 32;
   module.exports = $export;
 });
-$__System.registerDynamic('33', [], true, function ($__require, exports, module) {
+$__System.registerDynamic('36', [], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
@@ -917,17 +1186,17 @@ $__System.registerDynamic('33', [], true, function ($__require, exports, module)
     return typeof it === 'object' ? it !== null : typeof it === 'function';
   };
 });
-$__System.registerDynamic('23', ['33'], true, function ($__require, exports, module) {
+$__System.registerDynamic('23', ['36'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
-  var isObject = $__require('33');
+  var isObject = $__require('36');
   module.exports = function (it) {
     if (!isObject(it)) throw TypeError(it + ' is not an object!');
     return it;
   };
 });
-$__System.registerDynamic('34', [], true, function ($__require, exports, module) {
+$__System.registerDynamic('37', [], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
@@ -936,11 +1205,11 @@ $__System.registerDynamic('34', [], true, function ($__require, exports, module)
     return it;
   };
 });
-$__System.registerDynamic('32', ['34'], true, function ($__require, exports, module) {
+$__System.registerDynamic('35', ['37'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
-  var aFunction = $__require('34');
+  var aFunction = $__require('37');
   module.exports = function (fn, that, length) {
     aFunction(fn);
     if (that === undefined) return fn;
@@ -963,12 +1232,12 @@ $__System.registerDynamic('32', ['34'], true, function ($__require, exports, mod
     };
   };
 });
-$__System.registerDynamic('35', ['11', '33', '23', '32'], true, function ($__require, exports, module) {
+$__System.registerDynamic('38', ['11', '36', '23', '35'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
   var getDesc = $__require('11').getDesc,
-      isObject = $__require('33'),
+      isObject = $__require('36'),
       anObject = $__require('23');
   var check = function (O, proto) {
     anObject(O);
@@ -977,7 +1246,7 @@ $__System.registerDynamic('35', ['11', '33', '23', '32'], true, function ($__req
   module.exports = {
     set: Object.setPrototypeOf || ('__proto__' in {} ? function (test, buggy, set) {
       try {
-        set = $__require('32')(Function.call, getDesc(Object.prototype, '__proto__').set, 2);
+        set = $__require('35')(Function.call, getDesc(Object.prototype, '__proto__').set, 2);
         set(test, []);
         buggy = !(test instanceof Array);
       } catch (e) {
@@ -992,12 +1261,12 @@ $__System.registerDynamic('35', ['11', '33', '23', '32'], true, function ($__req
     check: check
   };
 });
-$__System.registerDynamic('36', ['22', '35'], true, function ($__require, exports, module) {
+$__System.registerDynamic('39', ['22', '38'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
   var $export = $__require('22');
-  $export($export.S, 'Object', { setPrototypeOf: $__require('35').set });
+  $export($export.S, 'Object', { setPrototypeOf: $__require('38').set });
 });
 $__System.registerDynamic('7', [], true, function ($__require, exports, module) {
   var global = this || self,
@@ -1006,27 +1275,27 @@ $__System.registerDynamic('7', [], true, function ($__require, exports, module) 
   var core = module.exports = { version: '1.2.6' };
   if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 });
-$__System.registerDynamic('37', ['36', '7'], true, function ($__require, exports, module) {
+$__System.registerDynamic('3a', ['39', '7'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
-  $__require('36');
+  $__require('39');
   module.exports = $__require('7').Object.setPrototypeOf;
 });
-$__System.registerDynamic("38", ["37"], true, function ($__require, exports, module) {
+$__System.registerDynamic("3b", ["3a"], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
-  module.exports = { "default": $__require("37"), __esModule: true };
+  module.exports = { "default": $__require("3a"), __esModule: true };
 });
-$__System.registerDynamic("2a", ["31", "38"], true, function ($__require, exports, module) {
+$__System.registerDynamic("2a", ["34", "3b"], true, function ($__require, exports, module) {
   /* */
   "use strict";
 
   var global = this || self,
       GLOBAL = global;
-  var _Object$create = $__require("31")["default"];
-  var _Object$setPrototypeOf = $__require("38")["default"];
+  var _Object$create = $__require("34")["default"];
+  var _Object$setPrototypeOf = $__require("3b")["default"];
   exports["default"] = function (subClass, superClass) {
     if (typeof superClass !== "function" && superClass !== null) {
       throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
@@ -1059,7 +1328,7 @@ $__System.registerDynamic("11", [], true, function ($__require, exports, module)
     each: [].forEach
   };
 });
-$__System.registerDynamic('39', ['11'], true, function ($__require, exports, module) {
+$__System.registerDynamic('3c', ['11'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
@@ -1068,19 +1337,19 @@ $__System.registerDynamic('39', ['11'], true, function ($__require, exports, mod
     return $.setDesc(it, key, desc);
   };
 });
-$__System.registerDynamic("3a", ["39"], true, function ($__require, exports, module) {
+$__System.registerDynamic("3d", ["3c"], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
-  module.exports = { "default": $__require("39"), __esModule: true };
+  module.exports = { "default": $__require("3c"), __esModule: true };
 });
-$__System.registerDynamic("b", ["3a"], true, function ($__require, exports, module) {
+$__System.registerDynamic("b", ["3d"], true, function ($__require, exports, module) {
   /* */
   "use strict";
 
   var global = this || self,
       GLOBAL = global;
-  var _Object$defineProperty = $__require("3a")["default"];
+  var _Object$defineProperty = $__require("3d")["default"];
   exports["default"] = function () {
     function defineProperties(target, props) {
       for (var i = 0; i < props.length; i++) {
@@ -1171,7 +1440,7 @@ $__System.register("a", ["b", "c"], function (_export) {
     }
   };
 });
-$__System.register('3b', ['29', '2a', 'b', 'c', 'a'], function (_export) {
+$__System.register('3e', ['29', '2a', 'b', 'c', 'a'], function (_export) {
   var _get, _inherits, _createClass, _classCallCheck, Extension, Acasha;
 
   return {
@@ -1230,39 +1499,45 @@ $__System.register('3b', ['29', '2a', 'b', 'c', 'a'], function (_export) {
     }
   };
 });
-$__System.register('3c', ['28', '2b', '3b'], function (_export) {
+$__System.register('3f', ['28', '2b', '2c', '2d', '2e', '3e'], function (_export) {
   'use strict';
 
-  var DocumentObjectModelObjects, DocumentObjectModel, Acasha, CoreExtensions;
+  var DOMObjects, DOM, DOMIterate, DOMSelect, DOMAlter, Acasha, CoreExtensions;
   return {
     setters: [function (_) {
-      DocumentObjectModelObjects = _['default'];
+      DOMObjects = _['default'];
     }, function (_b) {
-      DocumentObjectModel = _b['default'];
-    }, function (_b2) {
-      Acasha = _b2['default'];
+      DOM = _b['default'];
+    }, function (_c) {
+      DOMIterate = _c['default'];
+    }, function (_d) {
+      DOMSelect = _d['default'];
+    }, function (_e) {
+      DOMAlter = _e['default'];
+    }, function (_e2) {
+      Acasha = _e2['default'];
     }],
     execute: function () {
-      CoreExtensions = [DocumentObjectModelObjects, DocumentObjectModel, Acasha];
+      CoreExtensions = [DOMObjects, DOM, DOMIterate, DOMSelect, DOMAlter, Acasha];
 
       _export('CoreExtensions', CoreExtensions);
     }
   };
 });
-$__System.register('1', ['9', '3c'], function (_export) {
+$__System.register('1', ['9', '3f'], function (_export) {
   'use strict';
 
   var ExtensionRepository, CoreExtensions, extensions, global;
   return {
     setters: [function (_) {
       ExtensionRepository = _.ExtensionRepository;
-    }, function (_c) {
-      CoreExtensions = _c.CoreExtensions;
+    }, function (_f) {
+      CoreExtensions = _f.CoreExtensions;
     }],
     execute: function () {
       extensions = new ExtensionRepository();
 
-      CoreExtensions.forEach(function (extension) {
+      CoreExtensions.forEach(function (extension, nth) {
         extensions.attach(new extension());
       });
 
@@ -1270,8 +1545,6 @@ $__System.register('1', ['9', '3c'], function (_export) {
       global = window || {};
 
       extensions.publish().extend(global);
-
-      console.log(extensions);
 
       _export('global', global);
     }

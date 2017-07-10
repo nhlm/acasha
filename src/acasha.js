@@ -3,7 +3,7 @@ import { CoreExtensions } from './core/extensions';
 
 var extensions = new ExtensionRepository();
 
-CoreExtensions.forEach(function(extension) {
+CoreExtensions.forEach(function(extension, nth) {
   extensions.attach(new extension);
 });
 
@@ -11,7 +11,5 @@ CoreExtensions.forEach(function(extension) {
 var global = window || {};
 
 extensions.publish().extend(global);
-
-console.log(extensions);
 
 export { global };

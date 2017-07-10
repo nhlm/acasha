@@ -1,13 +1,15 @@
 import { Extension } from '../../modularity/extension';
 
-export default class DocumentObjectModel extends Extension {
+export default class DOM extends Extension {
   get name() {
     return 'acasha/dom';
   }
 
   get dependencies() {
     return [
-      'acasha/dom-objects',
+      'acasha/dom-iteration',
+      'acasha/dom-selection',
+      'acasha/dom-manipulation',
     ];
   }
 
@@ -15,7 +17,7 @@ export default class DocumentObjectModel extends Extension {
     return {
       $: function($, factories) {
         return function(selector, context) {
-          return factories.listScope(selector, context);
+          return factories.listScopeFactory(selector, context);
         }
       },
     };

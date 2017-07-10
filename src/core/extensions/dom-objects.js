@@ -1,7 +1,7 @@
 import { Extension } from '../../modularity/extension';
-import { AcashaListScope } from '../scopes';
+import { AcashaListScope, AcashaElementScope } from '../scopes';
 
-export default class DocumentObjectModelObjects extends Extension {
+export default class DOMObjects extends Extension {
 
   get name() {
     return 'acasha/dom-objects';
@@ -9,7 +9,7 @@ export default class DocumentObjectModelObjects extends Extension {
 
   get factories() {
     return {
-      listScope: function() {
+      listScopeFactory: function() {
         return function(selector, context) {
           if ( typeof context === 'undefined' ) {
             context = document;
@@ -21,6 +21,21 @@ export default class DocumentObjectModelObjects extends Extension {
 
           return new AcashaListScope(document.querySelectorAll(selector, context), selector, context);
         };
+      },
+      listScope: function() {
+        return AcashaListScope;
+      },
+      elementScopeFactory: function() {
+        return function(element) {
+          if ( ! ( element instanceof HTMLElement ) ) {
+            throw 'Acasha Scope Error: Only HTMLElements are suitable for scope creation';
+          }
+
+          return new AcashaElementScope(element);
+        }
+      },
+      elementScope: function() {
+        return AcashaElementScope;
       }
     }
   }
