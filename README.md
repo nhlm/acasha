@@ -5,8 +5,8 @@ This library is currently under development.
 
 ### description
 
-Acasha is a all-in-one UI management library inspired by jQuery without any
-dependencies. Acasha provides a context-agnostic DOM manipulation served under
+Acasha is a all-in-one UI management library including jQuery without any
+dependencies. Acasha provides a context-agnostic DOM manipulation using served under
 the `$`-function and a component registry served under the `acasha`-namespace.
 
 ### building

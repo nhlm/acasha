@@ -5,18 +5,24 @@ export default class Acasha extends Extension {
     return 'acasha/acasha';
   }
 
+  get dependencies() {
+    return [
+      'acasha/registry',
+    ];
+  }
+
   get factories() {
     return {
       acasha: function(obj, factories, repository) {
-        function acasha() {
-
+        function acasha(name) {
+          return factories.acashaRepository.factorize(name);
         }
 
         acasha.extensions = repository.extensions;
 
         return acasha;
-      }
-    }
+      },
+    };
   }
 
   get globals() {

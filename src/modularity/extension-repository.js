@@ -56,6 +56,9 @@ class ExtensionRepository {
         if ( repository.publishExtension(name) ) {
           dependenciesMet++;
         }
+        else {
+          console.warn('Unresolved dependency: ' + name + ' for extension: ' + extension);
+        }
       });
 
       if ( this[extensions][extension].dependencies.length > dependenciesMet ) {

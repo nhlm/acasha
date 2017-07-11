@@ -1,17 +1,14 @@
-import DOMObjects from './extensions/dom-objects';
-import DOM from './extensions/dom';
-import DOMIterate from './extensions/dom-iteration';
-import DOMSelect from './extensions/dom-selection';
-import DOMAlter from './extensions/dom-manipulation';
+import jQueryExtension from './extensions/jquery';
 import Acasha from './extensions/acasha';
+import Registry from './extensions/acasha-registry';
+import RegistryObjects from './extensions/acasha-objects';
+
 
 var CoreExtensions = [
-  DOMObjects,
-  DOM,
-  DOMIterate,
-  DOMSelect,
-  DOMAlter,
+  jQueryExtension,
   Acasha,
+  Registry,
+  RegistryObjects,
 ];
 
 export { CoreExtensions };
