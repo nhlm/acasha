@@ -6531,7 +6531,7 @@ $__System.register('13', ['11', '12', 'b', 'c', 'a'], function (_export) {
         }, {
           key: 'dependencies',
           get: function get() {
-            return ['acasha/registry'];
+            return ['acasha/registry', 'acasha/binding'];
           }
         }, {
           key: 'factories',
@@ -6594,9 +6594,10 @@ $__System.register('14', ['11', '12', 'b', 'c', 'a'], function (_export) {
           value: function applyAcashaComponentFactoryExtensions(componentFactory, factories) {
             var factorySettings = this.settings.factory;
             componentFactory.prototype.component = function (settings) {
-              settings = factories.jQuery.extend(factorySettings, settings);
-              var component = factories.acashaComponentObjectFactory(settings);
-              return factories.acashaComponentWrapperObjectFactory(componentFactory.name, component);
+              settings = factories.jQuery.extend({}, factorySettings, settings);
+              var component = factories.acashaComponentObjectFactory(this.componentName, settings);
+              this.repository.components[this.componentName] = component;
+              return factories.acashaComponentWrapperObjectFactory(this.componentName, component);
             };
           }
         }, {
@@ -6639,395 +6640,149 @@ $__System.register('14', ['11', '12', 'b', 'c', 'a'], function (_export) {
     }
   };
 });
-$__System.registerDynamic('5', ['15', '7', '16'], true, function ($__require, exports, module) {
-    var global = this || self,
-        GLOBAL = global;
-    /* */
-    var $export = $__require('15'),
-        core = $__require('7'),
-        fails = $__require('16');
-    module.exports = function (KEY, exec) {
-        var fn = (core.Object || {})[KEY] || Object[KEY],
-            exp = {};
-        exp[KEY] = exec(fn);
-        $export($export.S + $export.F * fails(function () {
-            fn(1);
-        }), 'Object', exp);
-    };
-});
-$__System.registerDynamic('17', ['18', '5'], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  var toIObject = $__require('18');
-  $__require('5')('getOwnPropertyDescriptor', function ($getOwnPropertyDescriptor) {
-    return function getOwnPropertyDescriptor(it, key) {
-      return $getOwnPropertyDescriptor(toIObject(it), key);
-    };
-  });
-});
-$__System.registerDynamic('19', ['1a', '17'], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  var $ = $__require('1a');
-  $__require('17');
-  module.exports = function getOwnPropertyDescriptor(it, key) {
-    return $.getDesc(it, key);
-  };
-});
-$__System.registerDynamic("1b", ["19"], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  module.exports = { "default": $__require("19"), __esModule: true };
-});
-$__System.registerDynamic("11", ["1b"], true, function ($__require, exports, module) {
-  /* */
-  "use strict";
-
-  var global = this || self,
-      GLOBAL = global;
-  var _Object$getOwnPropertyDescriptor = $__require("1b")["default"];
-  exports["default"] = function get(_x, _x2, _x3) {
-    var _again = true;
-    _function: while (_again) {
-      var object = _x,
-          property = _x2,
-          receiver = _x3;
-      _again = false;
-      if (object === null) object = Function.prototype;
-      var desc = _Object$getOwnPropertyDescriptor(object, property);
-      if (desc === undefined) {
-        var parent = Object.getPrototypeOf(object);
-        if (parent === null) {
-          return undefined;
-        } else {
-          _x = parent;
-          _x2 = property;
-          _x3 = receiver;
-          _again = true;
-          desc = parent = undefined;
-          continue _function;
-        }
-      } else if ("value" in desc) {
-        return desc.value;
-      } else {
-        var getter = desc.get;
-        if (getter === undefined) {
-          return undefined;
-        }
-        return getter.call(receiver);
-      }
-    }
-  };
-  exports.__esModule = true;
-});
-$__System.registerDynamic('1c', ['1a'], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  var $ = $__require('1a');
-  module.exports = function create(P, D) {
-    return $.create(P, D);
-  };
-});
-$__System.registerDynamic("1d", ["1c"], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  module.exports = { "default": $__require("1c"), __esModule: true };
-});
-$__System.registerDynamic('1e', ['1a', '1f', '20', '21'], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  var getDesc = $__require('1a').getDesc,
-      isObject = $__require('1f'),
-      anObject = $__require('20');
-  var check = function (O, proto) {
-    anObject(O);
-    if (!isObject(proto) && proto !== null) throw TypeError(proto + ": can't set as prototype!");
-  };
-  module.exports = {
-    set: Object.setPrototypeOf || ('__proto__' in {} ? function (test, buggy, set) {
-      try {
-        set = $__require('21')(Function.call, getDesc(Object.prototype, '__proto__').set, 2);
-        set(test, []);
-        buggy = !(test instanceof Array);
-      } catch (e) {
-        buggy = true;
-      }
-      return function setPrototypeOf(O, proto) {
-        check(O, proto);
-        if (buggy) O.__proto__ = proto;else set(O, proto);
-        return O;
-      };
-    }({}, false) : undefined),
-    check: check
-  };
-});
-$__System.registerDynamic('22', ['15', '1e'], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  var $export = $__require('15');
-  $export($export.S, 'Object', { setPrototypeOf: $__require('1e').set });
-});
-$__System.registerDynamic('23', ['22', '7'], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  $__require('22');
-  module.exports = $__require('7').Object.setPrototypeOf;
-});
-$__System.registerDynamic("24", ["23"], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  module.exports = { "default": $__require("23"), __esModule: true };
-});
-$__System.registerDynamic("12", ["1d", "24"], true, function ($__require, exports, module) {
-  /* */
-  "use strict";
-
-  var global = this || self,
-      GLOBAL = global;
-  var _Object$create = $__require("1d")["default"];
-  var _Object$setPrototypeOf = $__require("24")["default"];
-  exports["default"] = function (subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-    }
-    subClass.prototype = _Object$create(superClass && superClass.prototype, { constructor: {
-        value: subClass,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      } });
-    if (superClass) _Object$setPrototypeOf ? _Object$setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-  };
-  exports.__esModule = true;
-});
-$__System.register("a", ["b", "c"], function (_export) {
-  var _createClass, _classCallCheck, Extension;
+$__System.register('15', ['16', 'b', 'c', 'd'], function (_export) {
+  var AcashaComponent, _createClass, _classCallCheck, _Symbol, componentsSymbol, AcashaComponentRepository, nameSymbol, repositorySymbol, AcashaComponentFactory, componentSymbol, AcashaComponentWrapper;
 
   return {
-    setters: [function (_b) {
-      _createClass = _b["default"];
+    setters: [function (_) {
+      AcashaComponent = _.AcashaComponent;
+    }, function (_b) {
+      _createClass = _b['default'];
     }, function (_c) {
-      _classCallCheck = _c["default"];
+      _classCallCheck = _c['default'];
+    }, function (_d) {
+      _Symbol = _d['default'];
     }],
     execute: function () {
-      "use strict";
+      'use strict';
 
-      Extension = (function () {
-        function Extension() {
-          _classCallCheck(this, Extension);
+      componentsSymbol = _Symbol('components');
 
-          this.loaded = false;
+      AcashaComponentRepository = (function () {
+        function AcashaComponentRepository() {
+          _classCallCheck(this, AcashaComponentRepository);
+
+          this[componentsSymbol] = {};
         }
 
-        _createClass(Extension, [{
-          key: "name",
-          get: function get() {
-            return undefined;
+        _createClass(AcashaComponentRepository, [{
+          key: 'factorize',
+          value: function factorize(name) {
+            if (this.has(name)) {
+              return new AcashaComponentWrapper(name, this[componentsSymbol][name]);
+            }
+
+            return new AcashaComponentFactory(name, this);
           }
         }, {
-          key: "dependencies",
-          get: function get() {
-            return [];
+          key: 'has',
+          value: function has(item) {
+            return item in this[componentsSymbol];
           }
         }, {
-          key: "settings",
+          key: 'components',
           get: function get() {
-            return {};
-          }
-        }, {
-          key: "factories",
-          get: function get() {
-            return {};
-          }
-        }, {
-          key: "globals",
-          get: function get() {
-            return [];
-          }
-        }, {
-          key: "autoDiscover",
-          get: function get() {
-            return true;
+            return this[componentsSymbol];
           }
         }]);
 
-        return Extension;
+        return AcashaComponentRepository;
       })();
 
-      _export("Extension", Extension);
-    }
-  };
-});
-$__System.registerDynamic('25', ['1a'], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  var $ = $__require('1a');
-  module.exports = function defineProperty(it, key, desc) {
-    return $.setDesc(it, key, desc);
-  };
-});
-$__System.registerDynamic("26", ["25"], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  module.exports = { "default": $__require("25"), __esModule: true };
-});
-$__System.registerDynamic("b", ["26"], true, function ($__require, exports, module) {
-  /* */
-  "use strict";
+      nameSymbol = _Symbol('component-name');
+      repositorySymbol = _Symbol('component-repository');
 
-  var global = this || self,
-      GLOBAL = global;
-  var _Object$defineProperty = $__require("26")["default"];
-  exports["default"] = function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        _Object$defineProperty(target, descriptor.key, descriptor);
-      }
-    }
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  }();
-  exports.__esModule = true;
-});
-$__System.registerDynamic('27', [], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  module.exports = function (it) {
-    if (typeof it != 'function') throw TypeError(it + ' is not a function!');
-    return it;
-  };
-});
-$__System.registerDynamic('21', ['27'], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  var aFunction = $__require('27');
-  module.exports = function (fn, that, length) {
-    aFunction(fn);
-    if (that === undefined) return fn;
-    switch (length) {
-      case 1:
-        return function (a) {
-          return fn.call(that, a);
-        };
-      case 2:
-        return function (a, b) {
-          return fn.call(that, a, b);
-        };
-      case 3:
-        return function (a, b, c) {
-          return fn.call(that, a, b, c);
-        };
-    }
-    return function () {
-      return fn.apply(that, arguments);
-    };
-  };
-});
-$__System.registerDynamic('15', ['28', '7', '21'], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  var global = $__require('28'),
-      core = $__require('7'),
-      ctx = $__require('21'),
-      PROTOTYPE = 'prototype';
-  var $export = function (type, name, source) {
-    var IS_FORCED = type & $export.F,
-        IS_GLOBAL = type & $export.G,
-        IS_STATIC = type & $export.S,
-        IS_PROTO = type & $export.P,
-        IS_BIND = type & $export.B,
-        IS_WRAP = type & $export.W,
-        exports = IS_GLOBAL ? core : core[name] || (core[name] = {}),
-        target = IS_GLOBAL ? global : IS_STATIC ? global[name] : (global[name] || {})[PROTOTYPE],
-        key,
-        own,
-        out;
-    if (IS_GLOBAL) source = name;
-    for (key in source) {
-      own = !IS_FORCED && target && key in target;
-      if (own && key in exports) continue;
-      out = own ? target[key] : source[key];
-      exports[key] = IS_GLOBAL && typeof target[key] != 'function' ? source[key] : IS_BIND && own ? ctx(out, global) : IS_WRAP && target[key] == out ? function (C) {
-        var F = function (param) {
-          return this instanceof C ? new C(param) : C(param);
-        };
-        F[PROTOTYPE] = C[PROTOTYPE];
-        return F;
-      }(out) : IS_PROTO && typeof out == 'function' ? ctx(Function.call, out) : out;
-      if (IS_PROTO) (exports[PROTOTYPE] || (exports[PROTOTYPE] = {}))[key] = out;
+      AcashaComponentFactory = (function () {
+        function AcashaComponentFactory(name, repository) {
+          _classCallCheck(this, AcashaComponentFactory);
+
+          this[nameSymbol] = name;
+          this[repositorySymbol] = repository;
+        }
+
+        _createClass(AcashaComponentFactory, [{
+          key: 'componentName',
+          get: function get() {
+            return this[nameSymbol];
+          }
+        }, {
+          key: 'repository',
+          get: function get() {
+            return this[repositorySymbol];
+          }
+        }, {
+          key: 'components',
+          get: function get() {
+            return this.repository[componentsSymbol];
+          }
+        }]);
+
+        return AcashaComponentFactory;
+      })();
+
+      componentSymbol = _Symbol('component');
+
+      AcashaComponentWrapper = (function () {
+        function AcashaComponentWrapper(name, component) {
+          _classCallCheck(this, AcashaComponentWrapper);
+
+          this[nameSymbol] = name;
+          this[componentSymbol] = component;
+        }
+
+        _createClass(AcashaComponentWrapper, [{
+          key: 'componentName',
+          get: function get() {
+            return this[nameSymbol];
+          }
+        }, {
+          key: 'wrappedComponent',
+          get: function get() {
+            return this[componentSymbol];
+          }
+        }]);
+
+        return AcashaComponentWrapper;
+      })();
+
+      _export('AcashaComponentRepository', AcashaComponentRepository);
+
+      _export('AcashaComponentFactory', AcashaComponentFactory);
+
+      _export('AcashaComponentWrapper', AcashaComponentWrapper);
     }
   };
-  $export.F = 1;
-  $export.G = 2;
-  $export.S = 4;
-  $export.P = 8;
-  $export.B = 16;
-  $export.W = 32;
-  module.exports = $export;
 });
-$__System.registerDynamic('29', ['16'], true, function ($__require, exports, module) {
+$__System.registerDynamic('17', ['18'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
-  module.exports = !$__require('16')(function () {
+  module.exports = !$__require('18')(function () {
     return Object.defineProperty({}, 'a', { get: function () {
         return 7;
       } }).a != 7;
   });
 });
-$__System.registerDynamic('2a', ['1a', '2b', '29'], true, function ($__require, exports, module) {
+$__System.registerDynamic('19', ['1a', '1b', '17'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
   var $ = $__require('1a'),
-      createDesc = $__require('2b');
-  module.exports = $__require('29') ? function (object, key, value) {
+      createDesc = $__require('1b');
+  module.exports = $__require('17') ? function (object, key, value) {
     return $.setDesc(object, key, createDesc(1, value));
   } : function (object, key, value) {
     object[key] = value;
     return object;
   };
 });
-$__System.registerDynamic('2c', ['2a'], true, function ($__require, exports, module) {
+$__System.registerDynamic('1c', ['19'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
-  module.exports = $__require('2a');
+  module.exports = $__require('19');
 });
-$__System.registerDynamic("16", [], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  module.exports = function (exec) {
-    try {
-      return !!exec();
-    } catch (e) {
-      return true;
-    }
-  };
-});
-$__System.registerDynamic("2d", [], true, function ($__require, exports, module) {
+$__System.registerDynamic("1d", [], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
@@ -7036,13 +6791,13 @@ $__System.registerDynamic("2d", [], true, function ($__require, exports, module)
     return hasOwnProperty.call(it, key);
   };
 });
-$__System.registerDynamic('2e', ['1a', '2d', '2f'], true, function ($__require, exports, module) {
+$__System.registerDynamic('1e', ['1a', '1d', '1f'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
   var def = $__require('1a').setDesc,
-      has = $__require('2d'),
-      TAG = $__require('2f')('toStringTag');
+      has = $__require('1d'),
+      TAG = $__require('1f')('toStringTag');
   module.exports = function (it, tag, stat) {
     if (it && !has(it = stat ? it : it.prototype, TAG)) def(it, TAG, {
       configurable: true,
@@ -7050,18 +6805,18 @@ $__System.registerDynamic('2e', ['1a', '2d', '2f'], true, function ($__require, 
     });
   };
 });
-$__System.registerDynamic('30', ['28'], true, function ($__require, exports, module) {
+$__System.registerDynamic('20', ['21'], true, function ($__require, exports, module) {
     var global = this || self,
         GLOBAL = global;
     /* */
-    var global = $__require('28'),
+    var global = $__require('21'),
         SHARED = '__core-js_shared__',
         store = global[SHARED] || (global[SHARED] = {});
     module.exports = function (key) {
         return store[key] || (store[key] = {});
     };
 });
-$__System.registerDynamic('31', [], true, function ($__require, exports, module) {
+$__System.registerDynamic('22', [], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
@@ -7071,30 +6826,23 @@ $__System.registerDynamic('31', [], true, function ($__require, exports, module)
     return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
   };
 });
-$__System.registerDynamic('28', [], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
-  var global = module.exports = typeof window != 'undefined' && window.Math == Math ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
-  if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
-});
-$__System.registerDynamic('2f', ['30', '31', '28'], true, function ($__require, exports, module) {
+$__System.registerDynamic('1f', ['20', '22', '21'], true, function ($__require, exports, module) {
     var global = this || self,
         GLOBAL = global;
     /* */
-    var store = $__require('30')('wks'),
-        uid = $__require('31'),
-        Symbol = $__require('28').Symbol;
+    var store = $__require('20')('wks'),
+        uid = $__require('22'),
+        Symbol = $__require('21').Symbol;
     module.exports = function (name) {
         return store[name] || (store[name] = Symbol && Symbol[name] || (Symbol || uid)('Symbol.' + name));
     };
 });
-$__System.registerDynamic('32', ['1a', '18'], true, function ($__require, exports, module) {
+$__System.registerDynamic('23', ['1a', '24'], true, function ($__require, exports, module) {
     var global = this || self,
         GLOBAL = global;
     /* */
     var $ = $__require('1a'),
-        toIObject = $__require('18');
+        toIObject = $__require('24');
     module.exports = function (object, el) {
         var O = toIObject(object),
             keys = $.getKeys(O),
@@ -7104,11 +6852,11 @@ $__System.registerDynamic('32', ['1a', '18'], true, function ($__require, export
         while (length > index) if (O[key = keys[index++]] === el) return key;
     };
 });
-$__System.registerDynamic('33', ['18', '1a'], true, function ($__require, exports, module) {
+$__System.registerDynamic('25', ['24', '1a'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
-  var toIObject = $__require('18'),
+  var toIObject = $__require('24'),
       getNames = $__require('1a').getNames,
       toString = {}.toString;
   var windowNames = typeof window == 'object' && Object.getOwnPropertyNames ? Object.getOwnPropertyNames(window) : [];
@@ -7124,25 +6872,7 @@ $__System.registerDynamic('33', ['18', '1a'], true, function ($__require, export
     return getNames(toIObject(it));
   };
 });
-$__System.registerDynamic("1a", [], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  var $Object = Object;
-  module.exports = {
-    create: $Object.create,
-    getProto: $Object.getPrototypeOf,
-    isEnum: {}.propertyIsEnumerable,
-    getDesc: $Object.getOwnPropertyDescriptor,
-    setDesc: $Object.defineProperty,
-    setDescs: $Object.defineProperties,
-    getKeys: $Object.keys,
-    getNames: $Object.getOwnPropertyNames,
-    getSymbols: $Object.getOwnPropertySymbols,
-    each: [].forEach
-  };
-});
-$__System.registerDynamic('34', ['1a'], true, function ($__require, exports, module) {
+$__System.registerDynamic('26', ['1a'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
@@ -7160,72 +6890,16 @@ $__System.registerDynamic('34', ['1a'], true, function ($__require, exports, mod
     return keys;
   };
 });
-$__System.registerDynamic('35', ['36'], true, function ($__require, exports, module) {
+$__System.registerDynamic('27', ['28'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
-  var cof = $__require('36');
+  var cof = $__require('28');
   module.exports = Array.isArray || function (arg) {
     return cof(arg) == 'Array';
   };
 });
-$__System.registerDynamic('1f', [], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  module.exports = function (it) {
-    return typeof it === 'object' ? it !== null : typeof it === 'function';
-  };
-});
-$__System.registerDynamic('20', ['1f'], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  var isObject = $__require('1f');
-  module.exports = function (it) {
-    if (!isObject(it)) throw TypeError(it + ' is not an object!');
-    return it;
-  };
-});
-$__System.registerDynamic("36", [], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  var toString = {}.toString;
-
-  module.exports = function (it) {
-    return toString.call(it).slice(8, -1);
-  };
-});
-$__System.registerDynamic('37', ['36'], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  var cof = $__require('36');
-  module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
-    return cof(it) == 'String' ? it.split('') : Object(it);
-  };
-});
-$__System.registerDynamic("3", [], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  // 7.2.1 RequireObjectCoercible(argument)
-  module.exports = function (it) {
-    if (it == undefined) throw TypeError("Can't call method on  " + it);
-    return it;
-  };
-});
-$__System.registerDynamic('18', ['37', '3'], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  var IObject = $__require('37'),
-      defined = $__require('3');
-  module.exports = function (it) {
-    return IObject(defined(it));
-  };
-});
-$__System.registerDynamic("2b", [], true, function ($__require, exports, module) {
+$__System.registerDynamic("1b", [], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
@@ -7238,36 +6912,36 @@ $__System.registerDynamic("2b", [], true, function ($__require, exports, module)
     };
   };
 });
-$__System.registerDynamic("38", [], true, function ($__require, exports, module) {
+$__System.registerDynamic("29", [], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
   module.exports = true;
 });
-$__System.registerDynamic('39', ['1a', '28', '2d', '29', '15', '2c', '16', '30', '2e', '31', '2f', '32', '33', '34', '35', '20', '18', '2b', '38'], true, function ($__require, exports, module) {
+$__System.registerDynamic('2a', ['1a', '21', '1d', '17', '2b', '1c', '18', '20', '1e', '22', '1f', '23', '25', '26', '27', '2c', '24', '1b', '29'], true, function ($__require, exports, module) {
   /* */
   'use strict';
 
   var global = this || self,
       GLOBAL = global;
   var $ = $__require('1a'),
-      global = $__require('28'),
-      has = $__require('2d'),
-      DESCRIPTORS = $__require('29'),
-      $export = $__require('15'),
-      redefine = $__require('2c'),
-      $fails = $__require('16'),
-      shared = $__require('30'),
-      setToStringTag = $__require('2e'),
-      uid = $__require('31'),
-      wks = $__require('2f'),
-      keyOf = $__require('32'),
-      $names = $__require('33'),
-      enumKeys = $__require('34'),
-      isArray = $__require('35'),
-      anObject = $__require('20'),
-      toIObject = $__require('18'),
-      createDesc = $__require('2b'),
+      global = $__require('21'),
+      has = $__require('1d'),
+      DESCRIPTORS = $__require('17'),
+      $export = $__require('2b'),
+      redefine = $__require('1c'),
+      $fails = $__require('18'),
+      shared = $__require('20'),
+      setToStringTag = $__require('1e'),
+      uid = $__require('22'),
+      wks = $__require('1f'),
+      keyOf = $__require('23'),
+      $names = $__require('25'),
+      enumKeys = $__require('26'),
+      isArray = $__require('27'),
+      anObject = $__require('2c'),
+      toIObject = $__require('24'),
+      createDesc = $__require('1b'),
       getDesc = $.getDesc,
       setDesc = $.setDesc,
       _create = $.create,
@@ -7396,7 +7070,7 @@ $__System.registerDynamic('39', ['1a', '28', '2d', '29', '15', '2c', '16', '30',
     $.setDescs = $defineProperties;
     $.getNames = $names.get = $getOwnPropertyNames;
     $.getSymbols = $getOwnPropertySymbols;
-    if (DESCRIPTORS && !$__require('38')) {
+    if (DESCRIPTORS && !$__require('29')) {
       redefine(ObjectProto, 'propertyIsEnumerable', $propertyIsEnumerable, true);
     }
   }
@@ -7434,200 +7108,79 @@ $__System.registerDynamic('39', ['1a', '28', '2d', '29', '15', '2c', '16', '30',
   setToStringTag(Math, 'Math', true);
   setToStringTag(global.JSON, 'JSON', true);
 });
-$__System.registerDynamic("3a", [], true, function ($__require, exports, module) {
+$__System.registerDynamic("2d", [], true, function ($__require, exports, module) {
   /* */
   "format cjs";
 
   var global = this || self,
       GLOBAL = global;
 });
-$__System.registerDynamic('7', [], true, function ($__require, exports, module) {
+$__System.registerDynamic('2e', ['2a', '2d', '7'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
-  var core = module.exports = { version: '1.2.6' };
-  if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
-});
-$__System.registerDynamic('3b', ['39', '3a', '7'], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  /* */
-  $__require('39');
-  $__require('3a');
+  $__require('2a');
+  $__require('2d');
   module.exports = $__require('7').Symbol;
 });
-$__System.registerDynamic('3c', ['3b'], true, function ($__require, exports, module) {
+$__System.registerDynamic('2f', ['2e'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
-  module.exports = $__require('3b');
+  module.exports = $__require('2e');
 });
-$__System.registerDynamic("d", ["3c"], true, function ($__require, exports, module) {
+$__System.registerDynamic("d", ["2f"], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
   /* */
-  module.exports = { "default": $__require("3c"), __esModule: true };
+  module.exports = { "default": $__require("2f"), __esModule: true };
 });
-$__System.register('3d', ['b', 'c', 'd', '3e'], function (_export) {
-  var _createClass, _classCallCheck, _Symbol, AcashaComponent, componentsSymbol, AcashaComponentRepository, nameSymbol, repositorySymbol, AcashaComponentFactory, componentSymbol, AcashaComponentWrapper;
+$__System.register('16', ['c', 'd'], function (_export) {
+  var _classCallCheck, _Symbol, nameSymbol, settingsSymbol, AcashaComponent;
 
   return {
-    setters: [function (_b) {
-      _createClass = _b['default'];
-    }, function (_c) {
+    setters: [function (_c) {
       _classCallCheck = _c['default'];
     }, function (_d) {
       _Symbol = _d['default'];
-    }, function (_e) {
-      AcashaComponent = _e.AcashaComponent;
     }],
     execute: function () {
       'use strict';
 
-      componentsSymbol = _Symbol('components');
+      nameSymbol = _Symbol('name');
+      settingsSymbol = _Symbol('settings');
 
-      AcashaComponentRepository = (function () {
-        function AcashaComponentRepository() {
-          _classCallCheck(this, AcashaComponentRepository);
-
-          this[componentsSymbol] = {};
-        }
-
-        _createClass(AcashaComponentRepository, [{
-          key: 'factorize',
-          value: function factorize(name) {
-            if (this.has(name)) {
-              return new AcashaComponentWrapper(name, this[componentsSymbol][name]);
-            }
-
-            return new AcashaComponentFactory(name, this);
-          }
-        }, {
-          key: 'has',
-          value: function has(item) {
-            return item in this[componentsSymbol];
-          }
-        }]);
-
-        return AcashaComponentRepository;
-      })();
-
-      nameSymbol = _Symbol('component-name');
-      repositorySymbol = _Symbol('component-repository');
-
-      AcashaComponentFactory = (function () {
-        function AcashaComponentFactory(name, repository) {
-          _classCallCheck(this, AcashaComponentFactory);
-
-          this[nameSymbol] = name;
-          this[repositorySymbol] = repository;
-        }
-
-        _createClass(AcashaComponentFactory, [{
-          key: 'name',
-          get: function get() {
-            return this[nameSymbol];
-          }
-        }, {
-          key: 'repository',
-          get: function get() {
-            return this[repositorySymbol];
-          }
-        }, {
-          key: 'components',
-          get: function get() {
-            return this.repository[componentsSymbol];
-          }
-        }]);
-
-        return AcashaComponentFactory;
-      })();
-
-      componentSymbol = _Symbol('component');
-
-      AcashaComponentWrapper = (function () {
-        function AcashaComponentWrapper(name, component) {
-          _classCallCheck(this, AcashaComponentWrapper);
-
-          this[nameSymbol] = name;
-          this[componentSymbol] = component;
-        }
-
-        _createClass(AcashaComponentWrapper, [{
-          key: 'name',
-          get: function get() {
-            return this[nameSymbol];
-          }
-        }, {
-          key: 'component',
-          get: function get() {
-            return this[componentSymbol];
-          }
-        }]);
-
-        return AcashaComponentWrapper;
-      })();
-
-      _export('AcashaComponentRepository', AcashaComponentRepository);
-
-      _export('AcashaComponentFactory', AcashaComponentFactory);
-
-      _export('AcashaComponentWrapper', AcashaComponentWrapper);
-    }
-  };
-});
-$__System.registerDynamic("c", [], true, function ($__require, exports, module) {
-  /* */
-  "use strict";
-
-  var global = this || self,
-      GLOBAL = global;
-  exports["default"] = function (instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  };
-
-  exports.__esModule = true;
-});
-$__System.register("3e", ["c"], function (_export) {
-  var _classCallCheck, AcashaComponent;
-
-  return {
-    setters: [function (_c) {
-      _classCallCheck = _c["default"];
-    }],
-    execute: function () {
-      "use strict";
-
-      AcashaComponent = function AcashaComponent() {
+      AcashaComponent = function AcashaComponent(name, settings) {
         _classCallCheck(this, AcashaComponent);
+
+        this[nameSymbol] = name;
+        this[settingsSymbol] = settings;
       };
 
-      _export("AcashaComponent", AcashaComponent);
+      _export('AcashaComponent', AcashaComponent);
     }
   };
 });
-$__System.register('3f', ['11', '12', 'b', 'c', 'a', '3d', '3e'], function (_export) {
-  var _get, _inherits, _createClass, _classCallCheck, Extension, AcashaComponentRepository, AcashaComponentFactory, AcashaComponentWrapper, AcashaComponent, RegistryObjects;
+$__System.register('30', ['11', '12', '15', '16', 'b', 'c', 'a'], function (_export) {
+  var _get, _inherits, AcashaComponentRepository, AcashaComponentFactory, AcashaComponentWrapper, AcashaComponent, _createClass, _classCallCheck, Extension, RegistryObjects;
 
   return {
     setters: [function (_) {
       _get = _['default'];
     }, function (_2) {
       _inherits = _2['default'];
+    }, function (_3) {
+      AcashaComponentRepository = _3.AcashaComponentRepository;
+      AcashaComponentFactory = _3.AcashaComponentFactory;
+      AcashaComponentWrapper = _3.AcashaComponentWrapper;
+    }, function (_4) {
+      AcashaComponent = _4.AcashaComponent;
     }, function (_b) {
       _createClass = _b['default'];
     }, function (_c) {
       _classCallCheck = _c['default'];
     }, function (_a) {
       Extension = _a.Extension;
-    }, function (_d) {
-      AcashaComponentRepository = _d.AcashaComponentRepository;
-      AcashaComponentFactory = _d.AcashaComponentFactory;
-      AcashaComponentWrapper = _d.AcashaComponentWrapper;
-    }, function (_e) {
-      AcashaComponent = _e.AcashaComponent;
     }],
     execute: function () {
       'use strict';
@@ -7682,8 +7235,8 @@ $__System.register('3f', ['11', '12', 'b', 'c', 'a', '3d', '3e'], function (_exp
                 };
               },
               acashaComponentObjectFactory: function acashaComponentObjectFactory(obj, factories, repository) {
-                return function (settings) {
-                  return new AcashaComponent(settings);
+                return function (name, settings) {
+                  return new AcashaComponent(name, settings);
                 };
               }
             };
@@ -7697,10 +7250,552 @@ $__System.register('3f', ['11', '12', 'b', 'c', 'a', '3d', '3e'], function (_exp
     }
   };
 });
-$__System.register('40', ['10', '13', '14', '3f'], function (_export) {
+$__System.registerDynamic("28", [], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  var toString = {}.toString;
+
+  module.exports = function (it) {
+    return toString.call(it).slice(8, -1);
+  };
+});
+$__System.registerDynamic('31', ['28'], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  var cof = $__require('28');
+  module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
+    return cof(it) == 'String' ? it.split('') : Object(it);
+  };
+});
+$__System.registerDynamic("3", [], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  // 7.2.1 RequireObjectCoercible(argument)
+  module.exports = function (it) {
+    if (it == undefined) throw TypeError("Can't call method on  " + it);
+    return it;
+  };
+});
+$__System.registerDynamic('24', ['31', '3'], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  var IObject = $__require('31'),
+      defined = $__require('3');
+  module.exports = function (it) {
+    return IObject(defined(it));
+  };
+});
+$__System.registerDynamic("18", [], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  module.exports = function (exec) {
+    try {
+      return !!exec();
+    } catch (e) {
+      return true;
+    }
+  };
+});
+$__System.registerDynamic('5', ['2b', '7', '18'], true, function ($__require, exports, module) {
+    var global = this || self,
+        GLOBAL = global;
+    /* */
+    var $export = $__require('2b'),
+        core = $__require('7'),
+        fails = $__require('18');
+    module.exports = function (KEY, exec) {
+        var fn = (core.Object || {})[KEY] || Object[KEY],
+            exp = {};
+        exp[KEY] = exec(fn);
+        $export($export.S + $export.F * fails(function () {
+            fn(1);
+        }), 'Object', exp);
+    };
+});
+$__System.registerDynamic('32', ['24', '5'], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  var toIObject = $__require('24');
+  $__require('5')('getOwnPropertyDescriptor', function ($getOwnPropertyDescriptor) {
+    return function getOwnPropertyDescriptor(it, key) {
+      return $getOwnPropertyDescriptor(toIObject(it), key);
+    };
+  });
+});
+$__System.registerDynamic('33', ['1a', '32'], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  var $ = $__require('1a');
+  $__require('32');
+  module.exports = function getOwnPropertyDescriptor(it, key) {
+    return $.getDesc(it, key);
+  };
+});
+$__System.registerDynamic("34", ["33"], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  module.exports = { "default": $__require("33"), __esModule: true };
+});
+$__System.registerDynamic("11", ["34"], true, function ($__require, exports, module) {
+  /* */
+  "use strict";
+
+  var global = this || self,
+      GLOBAL = global;
+  var _Object$getOwnPropertyDescriptor = $__require("34")["default"];
+  exports["default"] = function get(_x, _x2, _x3) {
+    var _again = true;
+    _function: while (_again) {
+      var object = _x,
+          property = _x2,
+          receiver = _x3;
+      _again = false;
+      if (object === null) object = Function.prototype;
+      var desc = _Object$getOwnPropertyDescriptor(object, property);
+      if (desc === undefined) {
+        var parent = Object.getPrototypeOf(object);
+        if (parent === null) {
+          return undefined;
+        } else {
+          _x = parent;
+          _x2 = property;
+          _x3 = receiver;
+          _again = true;
+          desc = parent = undefined;
+          continue _function;
+        }
+      } else if ("value" in desc) {
+        return desc.value;
+      } else {
+        var getter = desc.get;
+        if (getter === undefined) {
+          return undefined;
+        }
+        return getter.call(receiver);
+      }
+    }
+  };
+  exports.__esModule = true;
+});
+$__System.registerDynamic('35', ['1a'], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  var $ = $__require('1a');
+  module.exports = function create(P, D) {
+    return $.create(P, D);
+  };
+});
+$__System.registerDynamic("36", ["35"], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  module.exports = { "default": $__require("35"), __esModule: true };
+});
+$__System.registerDynamic('21', [], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
+  var global = module.exports = typeof window != 'undefined' && window.Math == Math ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
+  if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
+});
+$__System.registerDynamic('2b', ['21', '7', '37'], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  var global = $__require('21'),
+      core = $__require('7'),
+      ctx = $__require('37'),
+      PROTOTYPE = 'prototype';
+  var $export = function (type, name, source) {
+    var IS_FORCED = type & $export.F,
+        IS_GLOBAL = type & $export.G,
+        IS_STATIC = type & $export.S,
+        IS_PROTO = type & $export.P,
+        IS_BIND = type & $export.B,
+        IS_WRAP = type & $export.W,
+        exports = IS_GLOBAL ? core : core[name] || (core[name] = {}),
+        target = IS_GLOBAL ? global : IS_STATIC ? global[name] : (global[name] || {})[PROTOTYPE],
+        key,
+        own,
+        out;
+    if (IS_GLOBAL) source = name;
+    for (key in source) {
+      own = !IS_FORCED && target && key in target;
+      if (own && key in exports) continue;
+      out = own ? target[key] : source[key];
+      exports[key] = IS_GLOBAL && typeof target[key] != 'function' ? source[key] : IS_BIND && own ? ctx(out, global) : IS_WRAP && target[key] == out ? function (C) {
+        var F = function (param) {
+          return this instanceof C ? new C(param) : C(param);
+        };
+        F[PROTOTYPE] = C[PROTOTYPE];
+        return F;
+      }(out) : IS_PROTO && typeof out == 'function' ? ctx(Function.call, out) : out;
+      if (IS_PROTO) (exports[PROTOTYPE] || (exports[PROTOTYPE] = {}))[key] = out;
+    }
+  };
+  $export.F = 1;
+  $export.G = 2;
+  $export.S = 4;
+  $export.P = 8;
+  $export.B = 16;
+  $export.W = 32;
+  module.exports = $export;
+});
+$__System.registerDynamic('38', [], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  module.exports = function (it) {
+    return typeof it === 'object' ? it !== null : typeof it === 'function';
+  };
+});
+$__System.registerDynamic('2c', ['38'], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  var isObject = $__require('38');
+  module.exports = function (it) {
+    if (!isObject(it)) throw TypeError(it + ' is not an object!');
+    return it;
+  };
+});
+$__System.registerDynamic('39', [], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  module.exports = function (it) {
+    if (typeof it != 'function') throw TypeError(it + ' is not a function!');
+    return it;
+  };
+});
+$__System.registerDynamic('37', ['39'], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  var aFunction = $__require('39');
+  module.exports = function (fn, that, length) {
+    aFunction(fn);
+    if (that === undefined) return fn;
+    switch (length) {
+      case 1:
+        return function (a) {
+          return fn.call(that, a);
+        };
+      case 2:
+        return function (a, b) {
+          return fn.call(that, a, b);
+        };
+      case 3:
+        return function (a, b, c) {
+          return fn.call(that, a, b, c);
+        };
+    }
+    return function () {
+      return fn.apply(that, arguments);
+    };
+  };
+});
+$__System.registerDynamic('3a', ['1a', '38', '2c', '37'], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  var getDesc = $__require('1a').getDesc,
+      isObject = $__require('38'),
+      anObject = $__require('2c');
+  var check = function (O, proto) {
+    anObject(O);
+    if (!isObject(proto) && proto !== null) throw TypeError(proto + ": can't set as prototype!");
+  };
+  module.exports = {
+    set: Object.setPrototypeOf || ('__proto__' in {} ? function (test, buggy, set) {
+      try {
+        set = $__require('37')(Function.call, getDesc(Object.prototype, '__proto__').set, 2);
+        set(test, []);
+        buggy = !(test instanceof Array);
+      } catch (e) {
+        buggy = true;
+      }
+      return function setPrototypeOf(O, proto) {
+        check(O, proto);
+        if (buggy) O.__proto__ = proto;else set(O, proto);
+        return O;
+      };
+    }({}, false) : undefined),
+    check: check
+  };
+});
+$__System.registerDynamic('3b', ['2b', '3a'], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  var $export = $__require('2b');
+  $export($export.S, 'Object', { setPrototypeOf: $__require('3a').set });
+});
+$__System.registerDynamic('7', [], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  var core = module.exports = { version: '1.2.6' };
+  if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
+});
+$__System.registerDynamic('3c', ['3b', '7'], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  $__require('3b');
+  module.exports = $__require('7').Object.setPrototypeOf;
+});
+$__System.registerDynamic("3d", ["3c"], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  module.exports = { "default": $__require("3c"), __esModule: true };
+});
+$__System.registerDynamic("12", ["36", "3d"], true, function ($__require, exports, module) {
+  /* */
+  "use strict";
+
+  var global = this || self,
+      GLOBAL = global;
+  var _Object$create = $__require("36")["default"];
+  var _Object$setPrototypeOf = $__require("3d")["default"];
+  exports["default"] = function (subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    }
+    subClass.prototype = _Object$create(superClass && superClass.prototype, { constructor: {
+        value: subClass,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      } });
+    if (superClass) _Object$setPrototypeOf ? _Object$setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+  };
+  exports.__esModule = true;
+});
+$__System.registerDynamic("1a", [], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  var $Object = Object;
+  module.exports = {
+    create: $Object.create,
+    getProto: $Object.getPrototypeOf,
+    isEnum: {}.propertyIsEnumerable,
+    getDesc: $Object.getOwnPropertyDescriptor,
+    setDesc: $Object.defineProperty,
+    setDescs: $Object.defineProperties,
+    getKeys: $Object.keys,
+    getNames: $Object.getOwnPropertyNames,
+    getSymbols: $Object.getOwnPropertySymbols,
+    each: [].forEach
+  };
+});
+$__System.registerDynamic('3e', ['1a'], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  var $ = $__require('1a');
+  module.exports = function defineProperty(it, key, desc) {
+    return $.setDesc(it, key, desc);
+  };
+});
+$__System.registerDynamic("3f", ["3e"], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  /* */
+  module.exports = { "default": $__require("3e"), __esModule: true };
+});
+$__System.registerDynamic("b", ["3f"], true, function ($__require, exports, module) {
+  /* */
+  "use strict";
+
+  var global = this || self,
+      GLOBAL = global;
+  var _Object$defineProperty = $__require("3f")["default"];
+  exports["default"] = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        _Object$defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+  exports.__esModule = true;
+});
+$__System.registerDynamic("c", [], true, function ($__require, exports, module) {
+  /* */
+  "use strict";
+
+  var global = this || self,
+      GLOBAL = global;
+  exports["default"] = function (instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  };
+
+  exports.__esModule = true;
+});
+$__System.register("a", ["b", "c"], function (_export) {
+  var _createClass, _classCallCheck, Extension;
+
+  return {
+    setters: [function (_b) {
+      _createClass = _b["default"];
+    }, function (_c) {
+      _classCallCheck = _c["default"];
+    }],
+    execute: function () {
+      "use strict";
+
+      Extension = (function () {
+        function Extension() {
+          _classCallCheck(this, Extension);
+
+          this.loaded = false;
+        }
+
+        _createClass(Extension, [{
+          key: "name",
+          get: function get() {
+            return undefined;
+          }
+        }, {
+          key: "dependencies",
+          get: function get() {
+            return [];
+          }
+        }, {
+          key: "settings",
+          get: function get() {
+            return {};
+          }
+        }, {
+          key: "factories",
+          get: function get() {
+            return {};
+          }
+        }, {
+          key: "globals",
+          get: function get() {
+            return [];
+          }
+        }, {
+          key: "autoDiscover",
+          get: function get() {
+            return true;
+          }
+        }]);
+
+        return Extension;
+      })();
+
+      _export("Extension", Extension);
+    }
+  };
+});
+$__System.register('40', ['11', '12', 'b', 'c', 'a'], function (_export) {
+  var _get, _inherits, _createClass, _classCallCheck, Extension, Binding;
+
+  return {
+    setters: [function (_) {
+      _get = _['default'];
+    }, function (_2) {
+      _inherits = _2['default'];
+    }, function (_b) {
+      _createClass = _b['default'];
+    }, function (_c) {
+      _classCallCheck = _c['default'];
+    }, function (_a) {
+      Extension = _a.Extension;
+    }],
+    execute: function () {
+      'use strict';
+
+      Binding = (function (_Extension) {
+        _inherits(Binding, _Extension);
+
+        function Binding() {
+          _classCallCheck(this, Binding);
+
+          _get(Object.getPrototypeOf(Binding.prototype), 'constructor', this).apply(this, arguments);
+        }
+
+        _createClass(Binding, [{
+          key: 'name',
+          get: function get() {
+            return 'acasha/binding';
+          }
+        }, {
+          key: 'dependencies',
+          get: function get() {
+            return ['acasha/jquery', 'acasha/objects'];
+          }
+        }, {
+          key: 'autoDiscover',
+          get: function get() {
+            return false;
+          }
+        }, {
+          key: 'factories',
+          get: function get() {
+            return {
+              acashaPrototype: function acashaPrototype() {
+                return {
+                  acasha: {
+                    component: null,
+                    virtual: null
+                  }
+                };
+              },
+              acashaComponentWrapper: function acashaComponentWrapper(wrapper, factories) {
+                wrapper.prototype.bind = function (selector, context) {
+                  var wrapper = this;
+                  factories.jQuery(selector, context).each(function (index, element) {
+                    if (typeof element.acasha === 'undefined') {
+                      element.acasha = factories.jQuery.extend({}, factories.acashaPrototype.acasha);
+                    }
+
+                    console.log(factories.acashaRepository.factorize(wrapper.componentName), factories.acashaRepository.factorize(wrapper.componentName).wrappedComponent);
+
+                    element.acasha.component = factories.acashaRepository.factorize(wrapper.componentName).wrappedComponent;
+                  });
+
+                  return this;
+                };
+              }
+            };
+          }
+        }]);
+
+        return Binding;
+      })(Extension);
+
+      _export('default', Binding);
+    }
+  };
+});
+$__System.register('41', ['10', '13', '14', '30', '40'], function (_export) {
   'use strict';
 
-  var jQueryExtension, Acasha, Registry, RegistryObjects, CoreExtensions;
+  var jQueryExtension, Acasha, Registry, RegistryObjects, Binding, CoreExtensions;
   return {
     setters: [function (_) {
       jQueryExtension = _['default'];
@@ -7708,17 +7803,19 @@ $__System.register('40', ['10', '13', '14', '3f'], function (_export) {
       Acasha = _2['default'];
     }, function (_3) {
       Registry = _3['default'];
-    }, function (_f) {
-      RegistryObjects = _f['default'];
+    }, function (_4) {
+      RegistryObjects = _4['default'];
+    }, function (_5) {
+      Binding = _5['default'];
     }],
     execute: function () {
-      CoreExtensions = [jQueryExtension, Acasha, Registry, RegistryObjects];
+      CoreExtensions = [jQueryExtension, Acasha, Registry, RegistryObjects, Binding];
 
       _export('CoreExtensions', CoreExtensions);
     }
   };
 });
-$__System.register('1', ['9', '40'], function (_export) {
+$__System.register('1', ['9', '41'], function (_export) {
   'use strict';
 
   var ExtensionRepository, CoreExtensions, extensions, global;

@@ -18,10 +18,8 @@ export default class Registry extends Extension {
 
   get settings() {
     return {
-      factory: {
-
-      }
-    }
+      factory: {},
+    };
   }
 
   get factories() {
@@ -35,9 +33,10 @@ export default class Registry extends Extension {
   applyAcashaComponentFactoryExtensions(componentFactory, factories) {
     var factorySettings = this.settings.factory;
     componentFactory.prototype.component = function(settings) {
-      settings = factories.jQuery.extend(factorySettings, settings);
-      var component = factories.acashaComponentObjectFactory(settings);
-      return factories.acashaComponentWrapperObjectFactory(componentFactory.name, component);
+      settings = factories.jQuery.extend({}, factorySettings, settings);
+      var component = factories.acashaComponentObjectFactory(this.componentName, settings);
+      this.repository.components[this.componentName] = component;
+      return factories.acashaComponentWrapperObjectFactory(this.componentName, component);
     }
   }
 }

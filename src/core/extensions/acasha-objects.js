@@ -45,8 +45,8 @@ export default class RegistryObjects extends Extension {
         };
       },
       acashaComponentObjectFactory: function(obj, factories, repository) {
-        return function(settings) {
-          return new AcashaComponent(settings);
+        return function(name, settings) {
+          return new AcashaComponent(name, settings);
         };
       },
     };

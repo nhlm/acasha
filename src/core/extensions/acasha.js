@@ -8,6 +8,7 @@ export default class Acasha extends Extension {
   get dependencies() {
     return [
       'acasha/registry',
+      'acasha/binding',
     ];
   }
 

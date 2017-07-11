@@ -18,6 +18,10 @@ class AcashaComponentRepository {
   has(item) {
     return item in this[componentsSymbol];
   }
+
+  get components() {
+    return this[componentsSymbol];
+  }
 }
 
 var nameSymbol = Symbol('component-name');
@@ -29,7 +33,7 @@ class AcashaComponentFactory {
     this[repositorySymbol] = repository;
   }
 
-  get name() {
+  get componentName() {
     return this[nameSymbol];
   }
 
@@ -50,11 +54,11 @@ class AcashaComponentWrapper {
     this[componentSymbol] = component;
   }
 
-  get name() {
+  get componentName() {
     return this[nameSymbol];
   }
 
-  get component() {
+  get wrappedComponent() {
     return this[componentSymbol];
   }
 }
