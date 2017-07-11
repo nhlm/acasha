@@ -877,15 +877,136 @@ $__System.register('2d', ['29', '2a', 'b', 'c', 'a'], function (_export) {
         _createClass(DOMSelect, [{
           key: 'applyListScopeExtensions',
           value: function applyListScopeExtensions(listScope, factories) {
-            listScope.prototype.first = function (selector) {};
+            listScope.prototype.first = function (selector) {
+              if (this.list.length === 0) {
+                return undefined;
+              }
 
-            listScope.prototype.last = function (selector) {};
+              var element = this.list.item(0);
 
-            listScope.prototype.next = function (selector) {};
+              if (typeof selector === 'string' && !element.matches(selector)) {
+                var current = factories.elementScopeFactory(element);
+                return current.next(selector);
+              }
 
-            listScope.prototype.prev = function (selector) {};
+              return this.elementScopeFactory(element);
+            };
 
-            listScope.prototype.find = function (selector) {};
+            listScope.prototype.last = function (selector) {
+              if (this.list.length === 0) {
+                return undefined;
+              }
+
+              var element = this.list.item(this.list.length - 1);
+
+              if (typeof selector === 'string' && !element.matches(selector)) {
+                var current = factories.elementScopeFactory(element);
+                return current.prev(selector);
+              }
+
+              return this.elementScopeFactory(element);
+            };
+
+            listScope.prototype.next = function (selector) {
+              return this.first(selector);
+            };
+
+            listScope.prototype.prev = function (selector) {
+              return this.last(selector);
+            };
+
+            listScope.prototype.find = function (selector) {
+              for (var i in this.list) {
+                var matches = this.list.item(i).querySelectorAll(selector);
+
+                if (matches.length > 0) {
+                  return factories.listScopeFactory(matches, selector, this.list.item(i));
+                }
+              }
+
+              return undefined;
+            };
+
+            listScope.prototype.contains = function (selector) {
+              for (var i in this.list) {
+                var matches = this.list.item(i).matches(selector);
+
+                if (matches === true) {
+                  return true;
+                }
+              }
+
+              return false;
+            };
+
+            listScope.prototype.even = function (selector) {
+              return typeof selector === 'string' ? this.factories.listScopeFactory(this.context.querySelectorAll(this.selector + selector + ':nth-child(even)'), this.selector + selector + ':nth-child(even)', this.context) : this.factories.listScopeFactory(this.context.querySelectorAll(this.selector + ':nth-child(even)'), this.selector + ':nth-child(even)', this.context);
+            };
+
+            listScope.prototype.odd = function (selector) {
+              return typeof selector === 'string' ? this.factories.listScopeFactory(this.context.querySelectorAll(this.selector + selector + ':nth-child(odd)'), this.selector + selector + ':nth-child(odd)', this.context) : this.factories.listScopeFactory(this.context.querySelectorAll(this.selector + ':nth-child(odd)'), this.selector + ':nth-child(odd)', this.context);
+            };
+          }
+        }, {
+          key: 'applyElementScopeExtensions',
+          value: function applyElementScopeExtensions(elementScope, factories) {
+            elementScope.prototype.next = function (selector) {
+              if (!this.element.nextSibling) {
+                return undefined;
+              }
+
+              if (typeof selector === 'undefined') {
+                return factories.elementScopeFactory(this.element.nextSibling);
+              }
+
+              var element = this.element;
+              var matched = false;
+
+              while (element = element.nextSibling && matched === false) {
+                if (element.matches(selector)) {
+                  matched = true;
+                }
+              }
+
+              return factories.elementScopeFactory(element);
+            };
+
+            elementScope.prototype.prev = function (selector) {
+              if (!this.element.previousSibling) {
+                return undefined;
+              }
+
+              if (typeof selector === 'undefined') {
+                return factories.elementScopeFactory(this.element.previousSibling);
+              }
+
+              var element = this.element;
+              var matched = false;
+
+              while (element = element.previousSibling && matched === false) {
+                if (element.matches(selector)) {
+                  matched = true;
+                }
+              }
+
+              return factories.elementScopeFactory(element);
+            };
+
+            elementScope.prototype.find = function (selector) {
+              return factories.listScopeFactory(this.element.querySelectorAll(selector), selector, this.element);
+            };
+
+            elementScope.prototype.children = function () {
+              return factories.listScopeFactory(this.element.children, '*', this.element);
+            };
+
+            elementScope.prototype.contains = function (selector) {
+              return this.children().contains(selector);
+            };
+
+            elementScope.prototype.is = function (selector) {
+              return this.element.matches(selector);
+            };
           }
         }, {
           key: 'name',
@@ -908,6 +1029,9 @@ $__System.register('2d', ['29', '2a', 'b', 'c', 'a'], function (_export) {
             return {
               listScope: function listScope(_listScope, factories) {
                 this.applyListScopeExtensions(_listScope, factories);
+              },
+              elementScope: function elementScope(_elementScope, factories) {
+                this.applyElementScopeExtensions(_elementScope, factories);
               }
             };
           }
@@ -1534,13 +1658,90 @@ $__System.register('3f', ['28', '2b', '2c', '2d', '2e', '3e'], function (_export
     }
   };
 });
-$__System.register('1', ['9', '3f'], function (_export) {
+$__System.register('40', [], function (_export) {
+    'use strict';
+
+    var Polyfill;
+    return {
+        setters: [],
+        execute: function () {
+            Polyfill = {
+                name: 'Element@matches',
+                applied: false
+            };
+
+            if (typeof Element.prototype.matches === 'undefined') {
+                Element.prototype.matches = Element.prototype.matchesSelector || Element.prototype.mozMatchesSelector || Element.prototype.msMatchesSelector || Element.prototype.oMatchesSelector || Element.prototype.webkitMatchesSelector || function (s) {
+                    var matches = (this.document || this.ownerDocument).querySelectorAll(s),
+                        i = matches.length;
+                    while (--i >= 0 && matches.item(i) !== this) {}
+                    return i > -1;
+                };
+
+                Polyfill.applied = true;
+            }
+
+            _export('Polyfill', Polyfill);
+        }
+    };
+});
+$__System.register('41', [], function (_export) {
+    'use strict';
+
+    var Polyfill;
+    return {
+        setters: [],
+        execute: function () {
+            Polyfill = {
+                name: 'Element@closest',
+                applied: false
+            };
+
+            if (typeof Element.prototype.closest === 'undefined') {
+                Element.prototype.closest = function (s) {
+                    var matches = (this.document || this.ownerDocument).querySelectorAll(s),
+                        i,
+                        el = this;
+                    do {
+                        i = matches.length;
+                        while (--i >= 0 && matches.item(i) !== el) {};
+                    } while (i < 0 && (el = el.parentElement));
+                    return el;
+                };
+
+                Polyfill.applied = true;
+            }
+
+            _export('Polyfill', Polyfill);
+        }
+    };
+});
+$__System.register('42', ['40', '41'], function (_export) {
   'use strict';
 
-  var ExtensionRepository, CoreExtensions, extensions, global;
+  var MatchesPolyfill, ClosestPolyfill, Polyfills;
+  return {
+    setters: [function (_) {
+      MatchesPolyfill = _.Polyfill;
+    }, function (_2) {
+      ClosestPolyfill = _2.Polyfill;
+    }],
+    execute: function () {
+      Polyfills = [MatchesPolyfill, ClosestPolyfill];
+
+      _export('Polyfills', Polyfills);
+    }
+  };
+});
+$__System.register('1', ['9', '42', '3f'], function (_export) {
+  'use strict';
+
+  var ExtensionRepository, Polyfills, CoreExtensions, extensions, global;
   return {
     setters: [function (_) {
       ExtensionRepository = _.ExtensionRepository;
+    }, function (_2) {
+      Polyfills = _2.Polyfills;
     }, function (_f) {
       CoreExtensions = _f.CoreExtensions;
     }],
@@ -1555,6 +1756,11 @@ $__System.register('1', ['9', '3f'], function (_export) {
       global = window || {};
 
       extensions.publish().extend(global);
+
+      if (typeof global.acasha === 'undefined') {
+        global.acasha = {};
+        global.acasha.polyfills = Polyfills;
+      }
 
       _export('global', global);
     }
