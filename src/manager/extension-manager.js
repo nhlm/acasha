@@ -1,8 +1,10 @@
 import { Extension } from '../entities/extension';
+import { LogManager } from './log-manager';
 
 var extensionsSymbol = Symbol('extensions');
 var extensibleObjectsSymbol = Symbol('extensible-objects');
 var globalsSymbol = Symbol('globals');
+var loggerSymbol = Symbol('logger');
 
 /**
  * Extension Manager Class
@@ -16,12 +18,14 @@ class ExtensionManager {
    *
    * @param object extensions
    */
-  constructor(globals, extensions) {
+  constructor(logger, globals, extensions) {
     this[globalsSymbol] = globals;
     this[extensionsSymbol] = {};
     this[extensibleObjectsSymbol] = {
       acasha: globals.acasha,
     };
+
+    this[loggerSymbol] = logger || new LogManager();
 
     var manager = this;
 
@@ -31,7 +35,7 @@ class ExtensionManager {
       });
     }
     else {
-      console.warn('Extension Manager: Provided extensions parameter is not an Array');
+      this[loggerSymbol].warn('Extension Manager: Provided extensions parameter is not an Array');
     }
   }
 
@@ -46,7 +50,7 @@ class ExtensionManager {
       throw 'Extension Error: Only Extensions can be registered';
     }
 
-    var extension = new item(this);
+    var extension = new item(this[loggerSymbol]);
 
     if ( typeof extension.name !== 'string' ) {
       throw 'Extension Error: Extension to register must serve a name';
@@ -79,7 +83,10 @@ class ExtensionManager {
    */
   discover(extension) {
     if ( ! ( extension in this[extensionsSymbol] ) ) {
-      console.warn('Extension Manager: Unknown extension: ' + extension);
+      this[loggerSymbol].warn(
+        'Extensions Manager: Unknown extension ' + extension
+      );
+
       return false;
     }
 
@@ -113,6 +120,10 @@ class ExtensionManager {
 
     meta.booted = true;
 
+    this[loggerSymbol].debug(
+      'Extensions Manager: Extension discovered -> ' + meta.extension.name
+    );
+
     return true;
   }
 
@@ -128,14 +139,18 @@ class ExtensionManager {
 
     for ( var key in items ) {
       this[globalsSymbol][key] = items[key];
+
+      this[loggerSymbol].debug(
+        'Extensions Manager: Global "' + key + '" engaged'
+      );
     }
   }
 
   get names() {
     var names = [];
-    
+
     for ( var name in this[extensionsSymbol] ) {
-      if ( this[extensionsSymbol].booted ) {
+      if ( this[extensionsSymbol][name].booted ) {
         names.push(name);
       }
     }

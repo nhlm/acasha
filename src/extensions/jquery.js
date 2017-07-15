@@ -19,6 +19,8 @@ class jQueryExtension extends Extension {
     };
 
     objects.jQuery = jQuery;
+
+    this.log.debug('Extension [' + this.name + ']: jQuery ' + jQuery.fn.jquery + ' factorized');
   }
 
 }

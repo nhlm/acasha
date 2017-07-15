@@ -1,4 +1,7 @@
+import { LogManager } from '../manager/log-manager';
+
 var managerSymbol = Symbol('manager');
+var loggerSymbol = Symbol('logger');
 
 /**
  * Extension Class
@@ -6,6 +9,19 @@ var managerSymbol = Symbol('manager');
  * represents a extension definition.
  */
 class Extension {
+
+  /**
+   * Constructor
+   *
+   * @param LogManager logger
+   */
+  constructor(logger) {
+    if ( ! ( logger instanceof LogManager ) ) {
+      throw 'Extension Error: Provided logger must be instanceof LogManager';
+    }
+
+    this[loggerSymbol] = logger;
+  }
 
   /**
    * getter for extension name property
@@ -50,6 +66,13 @@ class Extension {
     return true;
   }
 
+  /**
+   * extends a class definition (prototype) of a provided object by the
+   * contents of a provided extensions object.
+   *
+   * @param object object
+   * @param object extensions
+   */
   extendClass(object, extensions) {
     if ( typeof object !== 'object' ) {
       throw 'Extension Error: object parameter must be an object';
@@ -63,6 +86,11 @@ class Extension {
       object.prototype[current] = extensions[current];
     }
   }
+
+  get log() {
+    return this[loggerSymbol];
+  }
+
 }
 
 export { Extension };
