@@ -131,6 +131,18 @@ class ExtensionManager {
     }
   }
 
+  get names() {
+    var names = [];
+    
+    for ( var name in this[extensionsSymbol] ) {
+      if ( this[extensionsSymbol].booted ) {
+        names.push(name);
+      }
+    }
+
+    return names;
+  }
+
 }
 
 export { ExtensionManager };
