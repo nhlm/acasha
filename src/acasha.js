@@ -1,15 +1,14 @@
-import { ExtensionRepository } from './modularity/extension-repository';
-import { CoreExtensions } from './core/extensions';
+import { ExtensionManager } from './manager/extension-manager';
 
-var extensions = new ExtensionRepository();
+import { jQueryExtension } from './extensions/jquery';
 
-CoreExtensions.forEach(function(extension, nth) {
-  extensions.attach(new extension);
-});
+window.acasha = function Acasha(name) {
 
-// objects elevation
-var global = window || {};
+};
 
-extensions.publish().extend(global);
-
-export { global };
+window.acasha.extensions = new ExtensionManager(
+  window,
+  [
+    jQueryExtension,
+  ]
+);
