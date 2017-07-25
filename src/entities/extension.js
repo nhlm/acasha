@@ -87,6 +87,20 @@ class Extension {
     }
   }
 
+  extendObject(object, extensions) {
+    if ( typeof object !== 'object' ) {
+      throw 'Extension Error: object parameter must be an object';
+    }
+
+    if ( typeof extensions !== 'object' ) {
+      throw 'Extension Error: extensions parameter must be an object';
+    }
+
+    for ( var current in extensions ) {
+      object[current] = extensions[current];
+    }
+  }
+
   get log() {
     return this[loggerSymbol];
   }

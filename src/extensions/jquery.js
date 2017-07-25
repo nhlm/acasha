@@ -14,13 +14,23 @@ class jQueryExtension extends Extension {
   }
 
   factorize(objects) {
-    jQuery.fn.component = function(name) {
+    var extension = this;
+    var extensions = {
+      component: function(name) {
 
+      },
     };
+
+    this.extendObject(jQuery.fn, extensions);
 
     objects.jQuery = jQuery;
 
-    this.log.debug('Extension [' + this.name + ']: jQuery ' + jQuery.fn.jquery + ' factorized');
+    this.log.debug(
+      'Extension [' + extension.name + ']: jQuery ' + jQuery.fn.jquery + ' factorized: ' +
+      Object.keys(extensions).join(', ')
+    );
+
+    this.log.debug();
   }
 
 }
