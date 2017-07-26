@@ -118,6 +118,10 @@ $__System.register('2', ['3', '4', '5', '6', '7'], function (_export) {
 
             var meta = this[extensionsSymbol][extension];
 
+            if (meta.booted === true) {
+              return true;
+            }
+
             if (!Array.isArray(meta.extension.dependencies)) {
               throw 'Extensions Error: dependencies must be served as an array of extension names';
             }
