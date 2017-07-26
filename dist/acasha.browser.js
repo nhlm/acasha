@@ -6535,7 +6535,17 @@ $__System.register('11', ['3', '5', '6', '10', '12', '13', 'e'], function (_expo
           value: function factorize(objects) {
             var extension = this;
             var extensions = {
-              component: function component(name) {}
+              component: function component(name) {
+                var components = objects.acasha.repositories.components;
+
+                if (name in components) {
+                  components[name].bind(this);
+                } else {
+                  extension.log.warn('Unknown component name in jQuery component wrapper: ' + name);
+                }
+
+                return this;
+              }
             };
 
             this.extendObject(jQuery.fn, extensions);
@@ -6594,12 +6604,40 @@ $__System.register('14', ['3', '5', '6', '12', '13', '15', '16'], function (_exp
           value: function factorize(objects) {
             var extension = this;
 
+            objects.component = Component;
+
             objects.hub.prototype.component = function (settings) {
               if (typeof settings !== 'object') {
                 extension.log.warn('Component settings must be an object');
               }
 
-              return objects.acasha.repositories.components[this.name] = new Component(settings || {});
+              var instance = new objects.component(settings || {});
+
+              if (instance.autoDiscover === true) {
+                instance.discover();
+              }
+
+              return objects.acasha.repositories.components[this.name] = instance;
+            };
+
+            objects.component.prototype.autoDiscover = false;
+
+            objects.component.prototype.bind = function (selector, context) {
+              if (!(selector instanceof objects.jQuery.fn.init)) {
+                selector = jQuery(selector, context);
+              }
+
+              selector.each(function () {
+                this.acasha = {
+                  component: this,
+                  timer: [],
+                  data: {}
+                };
+              });
+            };
+
+            objects.component.prototype.discover = function () {
+              objects.jQuery("[data-component='" + this.name + "']");
             };
 
             this.log.debug('Extension [' + extension.name + ']: Component Handler installed.');
@@ -6612,7 +6650,7 @@ $__System.register('14', ['3', '5', '6', '12', '13', '15', '16'], function (_exp
         }, {
           key: 'dependencies',
           get: function get() {
-            return ['acasha/hub'];
+            return ['acasha/hub', 'acasha/jquery'];
           }
         }]);
 

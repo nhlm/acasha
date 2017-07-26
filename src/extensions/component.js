@@ -10,19 +10,48 @@ class ComponentExtension extends Extension {
 
   get dependencies() {
     return [
-      'acasha/hub'
+      'acasha/hub',
+      'acasha/jquery',
     ];
   }
 
   factorize(objects) {
     var extension = this;
 
+    objects.component = Component;
+
     objects.hub.prototype.component = function(settings) {
       if ( typeof settings !== 'object' ) {
         extension.log.warn('Component settings must be an object');
       }
 
-      return objects.acasha.repositories.components[this.name] = new Component(settings || {});
+      var instance = new objects.component(settings || {});
+
+      if ( instance.autoDiscover === true ) {
+        instance.discover();
+      }
+
+      return objects.acasha.repositories.components[this.name] = instance;
+    };
+
+    objects.component.prototype.autoDiscover = false;
+
+    objects.component.prototype.bind = function(selector, context) {
+      if ( ! ( selector instanceof objects.jQuery.fn.init ) ) {
+        selector = jQuery(selector, context);
+      }
+
+      selector.each(function() {
+        this.acasha = {
+          component: this,
+          timer: [],
+          data: {},
+        };
+      });
+    };
+
+    objects.component.prototype.discover = function() {
+      objects.jQuery("[data-component='" + this.name + "']");
     };
 
     this.log.debug(

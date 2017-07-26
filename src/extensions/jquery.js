@@ -17,7 +17,16 @@ class jQueryExtension extends Extension {
     var extension = this;
     var extensions = {
       component: function(name) {
+        var components = objects.acasha.repositories.components;
 
+        if ( name in components ) {
+          components[name].bind(this);
+        }
+        else {
+          extension.log.warn('Unknown component name in jQuery component wrapper: ' + name);
+        }
+
+        return this;
       },
     };
 
