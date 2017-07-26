@@ -6615,7 +6615,7 @@ $__System.register('14', ['3', '5', '6', '12', '13', '15', '16'], function (_exp
                 extension.log.warn('Component settings must be an object');
               }
 
-              var instance = new objects.component(settings || {});
+              var instance = new objects.component(this.name, settings || {});
 
               if (instance.autoDiscover === true) {
                 instance.discover();
@@ -6631,9 +6631,12 @@ $__System.register('14', ['3', '5', '6', '12', '13', '15', '16'], function (_exp
                 selector = jQuery(selector, context);
               }
 
+              var component = this;
+
               selector.each(function () {
+                extension.log.debug('Acasha established on ', this);
                 this.acasha = {
-                  component: this,
+                  component: component,
                   timer: [],
                   data: {}
                 };
@@ -6874,6 +6877,260 @@ $__System.registerDynamic("5", ["28"], true, function ($__require, exports, modu
     };
   }();
   exports.__esModule = true;
+});
+$__System.register('4', ['5', '6', '7'], function (_export) {
+  var _createClass, _classCallCheck, _Symbol, logSymbol, warnSymbol, debugSymbol, LogManager;
+
+  return {
+    setters: [function (_) {
+      _createClass = _['default'];
+    }, function (_2) {
+      _classCallCheck = _2['default'];
+    }, function (_3) {
+      _Symbol = _3['default'];
+    }],
+    execute: function () {
+      'use strict';
+
+      logSymbol = _Symbol('log');
+      warnSymbol = _Symbol('warn');
+      debugSymbol = _Symbol('debug');
+
+      LogManager = (function () {
+        function LogManager(settings) {
+          _classCallCheck(this, LogManager);
+
+          this[logSymbol] = [];
+          this[warnSymbol] = [];
+          this[debugSymbol] = [];
+
+          this.settings = settings || {
+            log: true,
+            debug: false,
+            warn: true
+          };
+
+          if (typeof this.settings.log != 'boolean') {
+            throw 'Logging setting value "log" must be of type boolean';
+          }
+
+          if (typeof this.settings.debug != 'boolean') {
+            throw 'Logging setting value "debug" must be of type boolean';
+          }
+
+          if (typeof this.settings.warn != 'boolean') {
+            throw 'Logging setting value "warn" must be of type boolean';
+          }
+        }
+
+        _createClass(LogManager, [{
+          key: 'register',
+          value: function register(object) {
+            if ('log' in object && typeof object.log === 'function') {
+              this[logSymbol].push(object.log);
+            }
+
+            if ('warn' in object && typeof object.warn === 'function') {
+              this[warnSymbol].push(object.warn);
+            }
+
+            if ('debug' in object && typeof object.debug === 'function') {
+              this[debugSymbol].push(object.debug);
+            }
+          }
+        }, {
+          key: 'log',
+          value: function log() {
+            for (var _len = arguments.length, contents = Array(_len), _key = 0; _key < _len; _key++) {
+              contents[_key] = arguments[_key];
+            }
+
+            if (this.settings.log === true) {
+              this[logSymbol].forEach(function (callback) {
+                callback.call.apply(callback, [undefined].concat(contents));
+              });
+            }
+          }
+        }, {
+          key: 'warn',
+          value: function warn() {
+            for (var _len2 = arguments.length, contents = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+              contents[_key2] = arguments[_key2];
+            }
+
+            if (this.settings.warn === true) {
+              this[warnSymbol].forEach(function (callback) {
+                callback.call.apply(callback, [undefined].concat(contents));
+              });
+            }
+          }
+        }, {
+          key: 'debug',
+          value: function debug() {
+            for (var _len3 = arguments.length, contents = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+              contents[_key3] = arguments[_key3];
+            }
+
+            if (this.settings.debug === true) {
+              this[debugSymbol].forEach(function (callback) {
+                callback.call.apply(callback, [undefined].concat(contents));
+              });
+            }
+          }
+        }]);
+
+        return LogManager;
+      })();
+
+      _export('LogManager', LogManager);
+    }
+  };
+});
+$__System.register('3', ['4', '5', '6', '7'], function (_export) {
+  var LogManager, _createClass, _classCallCheck, _Symbol, managerSymbol, loggerSymbol, Extension;
+
+  return {
+    setters: [function (_4) {
+      LogManager = _4.LogManager;
+    }, function (_) {
+      _createClass = _['default'];
+    }, function (_2) {
+      _classCallCheck = _2['default'];
+    }, function (_3) {
+      _Symbol = _3['default'];
+    }],
+    execute: function () {
+      'use strict';
+
+      managerSymbol = _Symbol('manager');
+      loggerSymbol = _Symbol('logger');
+
+      /**
+       * Extension Class
+       *
+       * represents a extension definition.
+       */
+
+      Extension = (function () {
+
+        /**
+         * Constructor
+         *
+         * @param LogManager logger
+         */
+
+        function Extension(logger) {
+          _classCallCheck(this, Extension);
+
+          if (!(logger instanceof LogManager)) {
+            throw 'Extension Error: Provided logger must be instanceof LogManager';
+          }
+
+          this[loggerSymbol] = logger;
+        }
+
+        /**
+         * getter for extension name property
+         *
+         * @return string
+         */
+
+        _createClass(Extension, [{
+          key: 'globals',
+
+          /**
+           * returns globals export from the managed objects.
+           *
+           * @return object
+           */
+          value: function globals(objects) {
+            return {};
+          }
+
+          /**
+           * factory for object modifications.
+           */
+        }, {
+          key: 'factorize',
+          value: function factorize(objects) {}
+
+          /**
+           * getter for auto-discover flag for this extension.
+           *
+           * @return boolean
+           */
+        }, {
+          key: 'extendClass',
+
+          /**
+           * extends a class definition (prototype) of a provided object by the
+           * contents of a provided extensions object.
+           *
+           * @param object object
+           * @param object extensions
+           */
+          value: function extendClass(object, extensions) {
+            if (typeof object !== 'object') {
+              throw 'Extension Error: object parameter must be an object';
+            }
+
+            if (typeof extensions !== 'object') {
+              throw 'Extension Error: extensions parameter must be an object';
+            }
+
+            for (var current in extensions) {
+              object.prototype[current] = extensions[current];
+            }
+          }
+        }, {
+          key: 'extendObject',
+          value: function extendObject(object, extensions) {
+            if (typeof object !== 'object') {
+              throw 'Extension Error: object parameter must be an object';
+            }
+
+            if (typeof extensions !== 'object') {
+              throw 'Extension Error: extensions parameter must be an object';
+            }
+
+            for (var current in extensions) {
+              object[current] = extensions[current];
+            }
+          }
+        }, {
+          key: 'name',
+          get: function get() {
+            return undefined;
+          }
+
+          /**
+           * getter for dependencies property
+           *
+           * @return Array
+           */
+        }, {
+          key: 'dependencies',
+          get: function get() {
+            return [];
+          }
+        }, {
+          key: 'autoDiscover',
+          get: function get() {
+            return true;
+          }
+        }, {
+          key: 'log',
+          get: function get() {
+            return this[loggerSymbol];
+          }
+        }]);
+
+        return Extension;
+      })();
+
+      _export('Extension', Extension);
+    }
+  };
 });
 $__System.registerDynamic('29', [], true, function ($__require, exports, module) {
   var global = this || self,
@@ -7436,275 +7693,29 @@ $__System.registerDynamic("7", ["3e"], true, function ($__require, exports, modu
   /* */
   module.exports = { "default": $__require("3e"), __esModule: true };
 });
-$__System.register('4', ['5', '6', '7'], function (_export) {
-  var _createClass, _classCallCheck, _Symbol, logSymbol, warnSymbol, debugSymbol, LogManager;
+$__System.register('15', ['6', '7'], function (_export) {
+  var _classCallCheck, _Symbol, ComponentNameSymbol, ComponentSettingsSymbol, Component;
 
   return {
     setters: [function (_) {
-      _createClass = _['default'];
+      _classCallCheck = _['default'];
     }, function (_2) {
-      _classCallCheck = _2['default'];
-    }, function (_3) {
-      _Symbol = _3['default'];
+      _Symbol = _2['default'];
     }],
     execute: function () {
       'use strict';
 
-      logSymbol = _Symbol('log');
-      warnSymbol = _Symbol('warn');
-      debugSymbol = _Symbol('debug');
+      ComponentNameSymbol = _Symbol('name');
+      ComponentSettingsSymbol = _Symbol('settings');
 
-      LogManager = (function () {
-        function LogManager(settings) {
-          _classCallCheck(this, LogManager);
-
-          this[logSymbol] = [];
-          this[warnSymbol] = [];
-          this[debugSymbol] = [];
-
-          this.settings = settings || {
-            log: true,
-            debug: false,
-            warn: true
-          };
-
-          if (typeof this.settings.log != 'boolean') {
-            throw 'Logging setting value "log" must be of type boolean';
-          }
-
-          if (typeof this.settings.debug != 'boolean') {
-            throw 'Logging setting value "debug" must be of type boolean';
-          }
-
-          if (typeof this.settings.warn != 'boolean') {
-            throw 'Logging setting value "warn" must be of type boolean';
-          }
-        }
-
-        _createClass(LogManager, [{
-          key: 'register',
-          value: function register(object) {
-            if ('log' in object && typeof object.log === 'function') {
-              this[logSymbol].push(object.log);
-            }
-
-            if ('warn' in object && typeof object.warn === 'function') {
-              this[warnSymbol].push(object.warn);
-            }
-
-            if ('debug' in object && typeof object.debug === 'function') {
-              this[debugSymbol].push(object.debug);
-            }
-          }
-        }, {
-          key: 'log',
-          value: function log() {
-            for (var _len = arguments.length, contents = Array(_len), _key = 0; _key < _len; _key++) {
-              contents[_key] = arguments[_key];
-            }
-
-            if (this.settings.log === true) {
-              this[logSymbol].forEach(function (callback) {
-                callback.call.apply(callback, [undefined].concat(contents));
-              });
-            }
-          }
-        }, {
-          key: 'warn',
-          value: function warn() {
-            for (var _len2 = arguments.length, contents = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-              contents[_key2] = arguments[_key2];
-            }
-
-            if (this.settings.warn === true) {
-              this[warnSymbol].forEach(function (callback) {
-                callback.call.apply(callback, [undefined].concat(contents));
-              });
-            }
-          }
-        }, {
-          key: 'debug',
-          value: function debug() {
-            for (var _len3 = arguments.length, contents = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-              contents[_key3] = arguments[_key3];
-            }
-
-            if (this.settings.debug === true) {
-              this[debugSymbol].forEach(function (callback) {
-                callback.call.apply(callback, [undefined].concat(contents));
-              });
-            }
-          }
-        }]);
-
-        return LogManager;
-      })();
-
-      _export('LogManager', LogManager);
-    }
-  };
-});
-$__System.register('3', ['4', '5', '6', '7'], function (_export) {
-  var LogManager, _createClass, _classCallCheck, _Symbol, managerSymbol, loggerSymbol, Extension;
-
-  return {
-    setters: [function (_4) {
-      LogManager = _4.LogManager;
-    }, function (_) {
-      _createClass = _['default'];
-    }, function (_2) {
-      _classCallCheck = _2['default'];
-    }, function (_3) {
-      _Symbol = _3['default'];
-    }],
-    execute: function () {
-      'use strict';
-
-      managerSymbol = _Symbol('manager');
-      loggerSymbol = _Symbol('logger');
-
-      /**
-       * Extension Class
-       *
-       * represents a extension definition.
-       */
-
-      Extension = (function () {
-
-        /**
-         * Constructor
-         *
-         * @param LogManager logger
-         */
-
-        function Extension(logger) {
-          _classCallCheck(this, Extension);
-
-          if (!(logger instanceof LogManager)) {
-            throw 'Extension Error: Provided logger must be instanceof LogManager';
-          }
-
-          this[loggerSymbol] = logger;
-        }
-
-        /**
-         * getter for extension name property
-         *
-         * @return string
-         */
-
-        _createClass(Extension, [{
-          key: 'globals',
-
-          /**
-           * returns globals export from the managed objects.
-           *
-           * @return object
-           */
-          value: function globals(objects) {
-            return {};
-          }
-
-          /**
-           * factory for object modifications.
-           */
-        }, {
-          key: 'factorize',
-          value: function factorize(objects) {}
-
-          /**
-           * getter for auto-discover flag for this extension.
-           *
-           * @return boolean
-           */
-        }, {
-          key: 'extendClass',
-
-          /**
-           * extends a class definition (prototype) of a provided object by the
-           * contents of a provided extensions object.
-           *
-           * @param object object
-           * @param object extensions
-           */
-          value: function extendClass(object, extensions) {
-            if (typeof object !== 'object') {
-              throw 'Extension Error: object parameter must be an object';
-            }
-
-            if (typeof extensions !== 'object') {
-              throw 'Extension Error: extensions parameter must be an object';
-            }
-
-            for (var current in extensions) {
-              object.prototype[current] = extensions[current];
-            }
-          }
-        }, {
-          key: 'extendObject',
-          value: function extendObject(object, extensions) {
-            if (typeof object !== 'object') {
-              throw 'Extension Error: object parameter must be an object';
-            }
-
-            if (typeof extensions !== 'object') {
-              throw 'Extension Error: extensions parameter must be an object';
-            }
-
-            for (var current in extensions) {
-              object[current] = extensions[current];
-            }
-          }
-        }, {
-          key: 'name',
-          get: function get() {
-            return undefined;
-          }
-
-          /**
-           * getter for dependencies property
-           *
-           * @return Array
-           */
-        }, {
-          key: 'dependencies',
-          get: function get() {
-            return [];
-          }
-        }, {
-          key: 'autoDiscover',
-          get: function get() {
-            return true;
-          }
-        }, {
-          key: 'log',
-          get: function get() {
-            return this[loggerSymbol];
-          }
-        }]);
-
-        return Extension;
-      })();
-
-      _export('Extension', Extension);
-    }
-  };
-});
-$__System.register("15", ["6"], function (_export) {
-  var _classCallCheck, Component;
-
-  return {
-    setters: [function (_) {
-      _classCallCheck = _["default"];
-    }],
-    execute: function () {
-      "use strict";
-
-      Component = function Component() {
+      Component = function Component(name, settings) {
         _classCallCheck(this, Component);
+
+        this[ComponentNameSymbol] = name;
+        this[ComponentSettingsSymbol] = settings || {};
       };
 
-      _export("Component", Component);
+      _export('Component', Component);
     }
   };
 });

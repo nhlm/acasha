@@ -25,7 +25,7 @@ class ComponentExtension extends Extension {
         extension.log.warn('Component settings must be an object');
       }
 
-      var instance = new objects.component(settings || {});
+      var instance = new objects.component(this.name, settings || {});
 
       if ( instance.autoDiscover === true ) {
         instance.discover();
@@ -41,9 +41,12 @@ class ComponentExtension extends Extension {
         selector = jQuery(selector, context);
       }
 
+      var component = this;
+
       selector.each(function() {
+        extension.log.debug('Acasha established on ', this);
         this.acasha = {
-          component: this,
+          component: component,
           timer: [],
           data: {},
         };
