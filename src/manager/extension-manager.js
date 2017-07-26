@@ -110,6 +110,7 @@ class ExtensionManager {
     });
 
     if ( dependenciesMet < meta.extension.dependencies.length ) {
+      console.log(this[extensionsSymbol]);
       throw 'Extension Error: Can not resolve ' + ( meta.extension.dependencies.length - dependenciesMet ) +
             ' dependencies required for ' + extension
       ;
@@ -160,4 +161,4 @@ class ExtensionManager {
 
 }
 
-export { ExtensionManager };
+export { ExtensionManager, extensibleObjectsSymbol };

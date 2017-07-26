@@ -29,8 +29,6 @@ class jQueryExtension extends Extension {
       'Extension [' + extension.name + ']: jQuery ' + jQuery.fn.jquery + ' factorized: ' +
       Object.keys(extensions).join(', ')
     );
-
-    this.log.debug();
   }
 
 }

@@ -13,6 +13,18 @@ class LogManager {
       debug: false,
       warn: true,
     };
+
+    if ( typeof this.settings.log != 'boolean' ) {
+      throw 'Logging setting value "log" must be of type boolean';
+    }
+
+    if ( typeof this.settings.debug != 'boolean' ) {
+      throw 'Logging setting value "debug" must be of type boolean';
+    }
+
+    if ( typeof this.settings.warn != 'boolean' ) {
+      throw 'Logging setting value "warn" must be of type boolean';
+    }
   }
 
   register(object) {
